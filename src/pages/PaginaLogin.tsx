@@ -1,12 +1,27 @@
 import * as yup from "yup";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField, Button, Typography,FormControlLabel, Checkbox, Link } from "@mui/material";
+import { TextField, Button, Typography,FormControlLabel, Checkbox, Link, Box } from "@mui/material";
 import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import alertaMensagem from "../shared/components/AlertaMensagem";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import logo from "../assets/logo-titulo.png";
 
 const PaginaLogin = () => {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [alerta, setAlerta] = useState<React.ReactNode | null>(null);
+
+    useEffect(() =>{
+        if (!alerta) return;
+
+        const timer = setTimeout(() => {
+            setAlerta(null);
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [alerta]);
 
     const schema = yup.object({
         email: yup.string().email("Email inválido").required("Email é obrigatório"),
@@ -25,11 +40,13 @@ const PaginaLogin = () => {
 
             localStorage.setItem("token", response.data.token)
 
-            window.alert("logado!")
+            navigate("/dashboard")
 
         }catch(error:any){
             if(error.response){
-                window.alert("Erro ao fazer login: " + error.response.data.message);
+                setAlerta(alertaMensagem(error.response.data.message, "error",<ReportProblemIcon />));
+            }else{
+                setAlerta(alertaMensagem("Ocorreu um erro ao tentar entrar. Por favor, tente novamente mais tarde.", "error",<ReportProblemIcon />));
             }
         }
         
@@ -38,10 +55,11 @@ const PaginaLogin = () => {
     return (
         <main className="min-h-screen w-full flex items-center justify-center bg-gray-100">
             <div className=" w-full max-w-5xl min-h-[500px] bg-white shadow-lg rounded-2xl flex overflow-hidden">
-                <section className="flex w-1/2 bg-[#F76843] p-2">
+                <section className="flex w-1/2 bg-[#F5613B] p-2">
                     <div className="m-auto text-white font-sans">
-                        <h1 className="text-4xl font-bold mb-4 underline decoration-pink-500 ">Bem-vindo!</h1>
-                        <p className="text-white/90 leading-relaxed">Organize sua agenda, evite conflitos de horários e tenha controle total dos seus atendimentos em um só lugar</p>
+                        <figure>
+                            <img src={logo} alt="Logo" className="w-full"/>
+                        </figure>
                     </div>
                 </section>
 
@@ -73,7 +91,7 @@ const PaginaLogin = () => {
                                 <Link href="#" underline="hover">Esqueceu sua senha?</Link>
                             </div>
 
-                            <Button className="mt-4" type="submit" fullWidth sx={{ backgroundColor: "#F76843", border: "2px solid #F76843", borderRadius: "1rem" ,color: "#fff", '&:hover': { backgroundColor: "#f7562d",},}}>
+                            <Button className="mt-4" type="submit" fullWidth sx={{ backgroundColor: "#F5613B", border: "2px solid #F76843", borderRadius: "1rem" ,color: "#fff", '&:hover': { backgroundColor: "#f7562d",},}}>
                                 Entrar
                             </Button>
                         </form>
@@ -84,6 +102,8 @@ const PaginaLogin = () => {
                     </footer>
                 </section> 
             </div>
+
+        {alerta && <Box sx={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1301,pointerEvents: 'none' }}>{alerta}</Box>}
         </main>
     )
 }
