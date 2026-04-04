@@ -1,8 +1,8 @@
 import { createContext, useState, type ReactNode } from 'react';
 
 interface IContext {
-  setOpenSideBar: (open: false | true) => void;
-  openSideBar: false | true;
+  setAbrirModalCliente: (open: false | true) => void;
+  modalCliente: false | true;
 
 }
 
@@ -11,17 +11,17 @@ interface AppProvideProps{
 }
 
 const inicial: IContext = {
-  setOpenSideBar: () => {},
-  openSideBar: false
+  setAbrirModalCliente: () => {},
+  modalCliente: false
 };
 
 export const AppContext = createContext<IContext>(inicial);
 
 export const AppProvider = ({ children }: AppProvideProps) => {
-  const [openSideBar, setOpenSideBar] = useState<false | true>(false);
+  const [modalCliente, setAbrirModalCliente] = useState<false | true>(false);
 
   return (
-    <AppContext.Provider value={{ openSideBar, setOpenSideBar }}>
+    <AppContext.Provider value={{ modalCliente, setAbrirModalCliente }}>
       {children}
     </AppContext.Provider>
   );

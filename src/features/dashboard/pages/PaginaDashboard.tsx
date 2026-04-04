@@ -4,11 +4,15 @@ import { useNavigate } from "react-router-dom";
 import Stack from '@mui/material/Stack';
 import PersonIcon from "@mui/icons-material/Person";
 import EventIcon from "@mui/icons-material/Event";
+import Modal from "../../../shared/modals/Modal";
+import { AppContext } from "../../../shared/context/context";
+import React from "react";
 
 
 
 const PaginaDashboard = () => {
     const navigate = useNavigate();
+    const {setAbrirModalCliente} = React.useContext(AppContext);
     
     return (
         <>
@@ -31,6 +35,7 @@ const PaginaDashboard = () => {
                         </div>
                     </div>
                 </section>
+
                 <section className="flex flex-row gap-3">
                     <Paper className="basis-2/3" elevation={3} sx={{marginBottom: '1rem', width: '100%', height: '100px', backgroundColor: '#F8F9FA' }}>
                         <Typography variant="h6" sx={{fontSize: '1rem', backgroundColor: '#ECECEC', width: '100%', padding: '0.5rem', border: '1px solid #ddd' }} gutterBottom  fontWeight="400">Agendamentos recentes</Typography>
@@ -39,12 +44,14 @@ const PaginaDashboard = () => {
                         <Typography variant="h6" sx={{fontSize: '1rem',  backgroundColor: '#ECECEC', width: '100%', padding: '0.5rem', border: '1px solid #ddd' }} gutterBottom fontWeight="400">Ações rapidas</Typography>
 
                         <Stack spacing={2} direction="column" sx={{ mt: 2, padding: 1 }}>
-                            <Button variant="outlined" startIcon={<PersonIcon />} sx={{ color: "green" }}>Cadastrar Cliente</Button>
+                            <Button variant="outlined" startIcon={<PersonIcon />} sx={{ color: "green" }} onClick={() => setAbrirModalCliente(true)}>Cadastrar Cliente</Button>
                             <Button variant="outlined" startIcon={<EventIcon />} sx={{ color: "blue" }}>Novo Agendamento</Button>
                         </Stack>
 
                     </Paper>
                 </section>
+
+                <Modal/>
             </main>
         </>
     )

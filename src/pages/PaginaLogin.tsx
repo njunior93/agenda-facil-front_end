@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { set, useForm } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { TextField, Button, Typography,FormControlLabel, Checkbox, Link, Box } from "@mui/material";
 import axios from 'axios';
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import alertaMensagem from "../shared/components/AlertaMensagem";
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import logo from "../assets/logo-titulo.png";
+import type { InferType } from "yup";
 
 const PaginaLogin = () => {
     const navigate = useNavigate();
@@ -26,11 +27,13 @@ const PaginaLogin = () => {
     const schema = yup.object({
         email: yup.string().email("Email inválido").required("Email é obrigatório"),
         senha: yup.string().min(8, "A senha deve conter no mínimo 8 caracteres").required("Senha é obrigatória"),
-    })
+    });
 
-    const {register, handleSubmit, formState: { errors }} = useForm({resolver: yupResolver(schema)})
+    type LoginFormData  = InferType<typeof schema>;
 
-    const fetchEntrar = async (data: any) =>{
+    const {register, handleSubmit, formState: { errors }} = useForm<LoginFormData>({resolver: yupResolver(schema)})
+
+    const fetchEntrar = async (data: LoginFormData) =>{
         try{
 
             const response = await axios.post("http://localhost:3000/auth/login", {
