@@ -1,6 +1,5 @@
 import { Button, Typography } from "@mui/material";
 import Paper from '@mui/material/Paper';
-import { useNavigate } from "react-router-dom";
 import Stack from '@mui/material/Stack';
 import PersonIcon from "@mui/icons-material/Person";
 import EventIcon from "@mui/icons-material/Event";
@@ -9,17 +8,15 @@ import { AppContext } from "../../../shared/context/context";
 import React from "react";
 
 
-
 const PaginaDashboard = () => {
-    const navigate = useNavigate();
     const {setAbrirModalCliente} = React.useContext(AppContext);
     
     return (
         <>
-            <main>
+            <main className="h-screen">
                 <section>
                     <div className="flex flex-col  items-center justify-center">
-                        <Typography variant="h4" fontWeight="bold" color="#707070">
+                        <Typography variant="h4" component="h1" fontWeight="bold" color="#707070">
                             <span className="underline decoration-pink-500">Dashboard</span> Sistema de Gerenciamento de Agenda
                          </Typography>
                         <div className="flex justify-center flex-row gap-8 mt-6">
@@ -36,7 +33,7 @@ const PaginaDashboard = () => {
                     </div>
                 </section>
 
-                <section className="flex flex-row gap-3">
+                <section className="flex flex-row gap-3 p-2">
                     <Paper className="basis-2/3" elevation={3} sx={{marginBottom: '1rem', width: '100%', height: '100px', backgroundColor: '#F8F9FA' }}>
                         <Typography variant="h6" sx={{fontSize: '1rem', backgroundColor: '#ECECEC', width: '100%', padding: '0.5rem', border: '1px solid #ddd' }} gutterBottom  fontWeight="400">Agendamentos recentes</Typography>
                     </Paper>

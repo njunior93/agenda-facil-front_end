@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import alertaMensagem from '../components/AlertaMensagem';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import { useEffect } from 'react';
+import { getErrorMessage } from '../utils/getError';
+import type { ICliente } from '../interfaces/ICliente';
 
 
 const ModalComponent = () => {
@@ -28,7 +30,7 @@ const ModalComponent = () => {
             return () => clearTimeout(timer);
         }, [alerta]);
 
-    const syle = {
+    const style = {
         position: 'absolute',
         top: '50%',
         left: '50%',
@@ -42,12 +44,13 @@ const ModalComponent = () => {
 
     const schema = yup.object({
         nome: yup.string().required("O nome é obrigatório"),
-        email: yup.string().email("Email inválido"),
-        telefone: yup.string().test("telefone-valido", "Formato: (99) 9999-9999", (value) => {if (!value) return true; return /^\(\d{2}\)\s\d{4}-\d{4}$/.test(value)}),
-        celular: yup.string().test("celular-valido", "Formato: (99) 99999-9999", (value) => {if (!value) return true; return /^\(\d{2}\)\s\d{5}-\d{4}$/.test(value)}),
+        email: yup.string().email("Email inválido").required("O email é obrigatório"),
+        telefone: yup.string().test("telefone-valido", "Formato: (99) 9999-9999", (value) => {if (!value) return true; return /^\(\d{2}\)\s\d{4}-\d{4}$/.test(value)}).optional(),
+        celular: yup.string().test("celular-valido", "Formato: (99) 99999-9999", (value) => {if (!value) return true; return /^\(\d{2}\)\s\d{5}-\d{4}$/.test(value)}).required("O celular é obrigatório"),
     })
 
-    const {register, handleSubmit,reset, formState: {errors}} = useForm({resolver: yupResolver(schema)});
+
+    const {register, handleSubmit,reset, formState: {errors}} = useForm<ICliente>({resolver: yupResolver(schema)} as any);
 
     const formatarFoneCel = (numero: string) => {
         let valor = numero.replace(/\D/g, "");
@@ -68,7 +71,7 @@ const ModalComponent = () => {
         setAbrirModalCliente(false);
     }
 
-    const fetchGravarCliente = async (data: any) => {
+    const fetchGravarCliente = async (data: ICliente) => {
         const token = localStorage.getItem("token");
 
         if(!token) {
@@ -92,11 +95,8 @@ const ModalComponent = () => {
             setAbrirModalCliente(false);
 
         }catch(error:any){
-            if(error.response){
-                setAlerta(alertaMensagem(error.response.data.message, "error", <ReportProblemIcon/>))
-            }else{
-                setAlerta(alertaMensagem("Ocorreu um erro ao gravar", "error", <ReportProblemIcon/>))
-            }
+            const mensagemErro = getErrorMessage(error);
+            setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
         }
     }
 
@@ -104,7 +104,7 @@ const ModalComponent = () => {
     return (
         <>
          <Modal open={modalCliente} onClose={(_event: object,reason) => reason != 'backdropClick' && setAbrirModalCliente(false)}>
-                <Box sx={syle}>
+                <Box sx={style}>
                     <Typography variant="h6" component="h2">Cadastrar Cliente</Typography>
                     <form onSubmit={handleSubmit(fetchGravarCliente)}>
                             <TextField
