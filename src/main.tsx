@@ -10,6 +10,7 @@ import PaginaClientes from './features/clientes/pages/PaginaClientes.tsx'
 import MainLayout from './layouts/MainLayout.tsx'
 import PaginaDashboard from './features/dashboard/pages/PaginaDashboard.tsx'
 
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -45,7 +46,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppProvider>
-      <RouterProvider router={router} />
+        <RouterProvider router={router} />
     </AppProvider>  
   </StrictMode>,
 )
