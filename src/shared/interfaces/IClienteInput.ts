@@ -1,5 +1,4 @@
-export interface ICliente {
-    id?:string;
+export interface IClienteInput {
     nome: string;
     email: string;
     telefone?: string;

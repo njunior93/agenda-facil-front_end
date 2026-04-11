@@ -10,15 +10,17 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import alertaMensagem from '../components/AlertaMensagem';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { getErrorMessage } from '../utils/getError';
-import type { ICliente } from '../interfaces/ICliente';
+import type { IClienteInput } from '../interfaces/IClienteInput';
 
 
 const ModalComponent = () => {
-    const {modalCliente, setAbrirModalCliente} = React.useContext(AppContext);
+    const {abrirModal, setAbrirModal} = useContext(AppContext);
+    const {tituloModal, setTituloModal} = useContext(AppContext)
     const [alerta, setAlerta] = React.useState<React.ReactNode | null>(null);
     const navigate = useNavigate();
+    const {clienteLocalizado} = useContext(AppContext);
 
     useEffect(() =>{
             if (!alerta) return;
@@ -28,7 +30,29 @@ const ModalComponent = () => {
             }, 3000);
     
             return () => clearTimeout(timer);
-        }, [alerta]);
+    }, [alerta]);
+
+    useEffect(() =>{
+        if(tituloModal === 'Editar Cliente' && clienteLocalizado){
+            reset({
+                nome: clienteLocalizado.nome || '' ,
+                email: clienteLocalizado.email || '',
+                telefone: formatarFoneCel(clienteLocalizado.telefone) || '',
+                celular: formatarFoneCel(clienteLocalizado.celular) || ''
+            });
+        }
+    }, [tituloModal, clienteLocalizado]);
+
+    useEffect(() =>{
+        if(tituloModal === 'Cadastrar Cliente'){
+            reset({
+                nome: '' ,
+                email: '',
+                telefone:'',
+                celular: ''
+            });
+        }
+    }, [tituloModal, clienteLocalizado]);
 
     const style = {
         position: 'absolute',
@@ -49,8 +73,7 @@ const ModalComponent = () => {
         celular: yup.string().test("celular-valido", "Formato: (99) 99999-9999", (value) => {if (!value) return true; return /^\(\d{2}\)\s\d{5}-\d{4}$/.test(value)}).required("O celular é obrigatório"),
     })
 
-
-    const {register, handleSubmit,reset, formState: {errors}} = useForm<ICliente>({resolver: yupResolver(schema)} as any);
+    const {register, handleSubmit,reset, formState: {errors}} = useForm<IClienteInput>({resolver: yupResolver(schema)} as any);
 
     const formatarFoneCel = (numero: string) => {
         let valor = numero.replace(/\D/g, "");
@@ -68,19 +91,47 @@ const ModalComponent = () => {
 
     const cancelarCliente = () =>{
         reset();
-        setAbrirModalCliente(false);
+        setAbrirModal(false);
+        setTituloModal('')
     }
 
-    const fetchGravarCliente = async (data: ICliente) => {
+    const fetchCriarCliente = async (data: IClienteInput) => {
         const token = localStorage.getItem("token");
 
         if(!token) {
             navigate("/");
-            return;
         }
 
         try{
-             await axios.post("http://localhost:3000/cliente/gravar-cliente",{
+             await axios.post("http://localhost:3000/cliente/criar-cliente",{
+                nome: data.nome,
+                email: data.email,
+                telefone: data.telefone,
+                celular: data.celular
+            },
+            {
+                headers: {Authorization: `Bearer ${token}`}
+            });
+            
+            reset();
+            setAbrirModal(false);  
+            setTituloModal('')         
+            setAlerta(alertaMensagem("Cliente cadastrado com sucesso!", "success", <ReportProblemIcon/>));            
+        }catch(error:any){
+            const mensagemErro = getErrorMessage(error);
+            setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
+        }
+    }
+
+    const fetchEditarCliente = async (data: IClienteInput) =>{
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            navigate("/");
+        }
+
+        try{
+            await axios.patch(`http://localhost:3000/cliente/editar-cliente/${clienteLocalizado?.id}`,{
                 nome: data.nome,
                 email: data.email,
                 telefone: data.telefone,
@@ -90,23 +141,24 @@ const ModalComponent = () => {
                 headers: {Authorization: `Bearer ${token}`}
             });
 
-            setAlerta(alertaMensagem("Cliente cadastrado com sucesso!", "success", <ReportProblemIcon/>));
             reset();
-            setAbrirModalCliente(false);
-
-        }catch(error:any){
+            setAbrirModal(false);
+            setTituloModal('')           
+            setAlerta(alertaMensagem("Cliente atualizado com sucesso!", "success", <ReportProblemIcon/>));
+        }catch(error: any){
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
         }
     }
 
-
     return (
         <>
-         <Modal open={modalCliente} onClose={(_event: object,reason) => reason != 'backdropClick' && setAbrirModalCliente(false)}>
+         <Modal open={abrirModal} onClose={(_event: object,reason) => reason != 'backdropClick' && setAbrirModal(false)}>
                 <Box sx={style}>
-                    <Typography variant="h6" component="h2">Cadastrar Cliente</Typography>
-                    <form onSubmit={handleSubmit(fetchGravarCliente)}>
+                    <Typography variant="h6" component="h2">{tituloModal}</Typography>
+
+                    {tituloModal === 'Editar Cliente' && (
+                        <form onSubmit={handleSubmit(fetchEditarCliente)}>
                             <TextField
                                 label="Nome"
                                 {...register("nome")}
@@ -155,7 +207,62 @@ const ModalComponent = () => {
                                 Cancelar
                             </Button>
                         </Box>
-                    </form>
+                        </form>
+                    )}
+
+                    {tituloModal === 'Cadastrar Cliente' && (
+                        <form onSubmit={handleSubmit(fetchCriarCliente)}>
+                            <TextField
+                                label="Nome"
+                                {...register("nome")}
+                                error={!!errors.nome}
+                                helperText={errors.nome?.message}
+                                fullWidth
+                            />
+
+                        <Box sx={{ mt: 2 }}>
+                            <TextField
+                                label="Email"
+                                {...register("email")}
+                                error={!!errors.email}
+                                helperText={errors.email?.message}
+                                fullWidth
+                            />
+                        </Box>
+                        <Box sx={{ mt: 2 }}>
+                            <TextField
+                                label="Telefone"
+                                placeholder='(99) 9999-9999'
+                                {...register("telefone")}
+                                error={!!errors.telefone}
+                                helperText={errors.telefone?.message}
+                                onChange={(e) =>{
+                                    e.target.value = formatarFoneCel(e.target.value);
+                                }}
+                            />
+
+                        <TextField
+                                label="Celular"
+                                placeholder='(99) 99999-9999'
+                                {...register("celular")}
+                                error={!!errors.celular}
+                                helperText={errors.celular?.message}
+                                onChange={(e) =>{
+                                    e.target.value = formatarFoneCel(e.target.value);
+                                }}
+                            />
+                        </Box>
+                        <Box sx={{ mt: 2 }}>
+                            <Button type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}}>
+                                Gravar
+                            </Button>
+                            <Button  onClick={() => cancelarCliente()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
+                                Cancelar
+                            </Button>
+                        </Box>
+                        </form>
+                    )}
+                    
 
                 </Box>
          </Modal>

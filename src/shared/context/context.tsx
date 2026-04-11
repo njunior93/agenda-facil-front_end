@@ -1,12 +1,15 @@
 import { createContext, useState, type ReactNode } from 'react';
-import type { ICliente } from '../interfaces/ICliente';
+import type { IClienteOutput } from '../../features/clientes/interfaces/IClienteOutput';
 
 interface IContext {
-  setAbrirModalCliente: (open: false | true) => void;
-  modalCliente: false | true;
-  listaClientes: ICliente[];
-  setListaClientes: (clientes: ICliente[]) => void;
-
+  setAbrirModal: (open: false | true) => void;
+  abrirModal: false | true;
+  listaClientes: IClienteOutput[];
+  setListaClientes: (clientes: IClienteOutput[]) => void;
+  tituloModal: string;
+  setTituloModal: (titulo: string) => void;
+  clienteLocalizado: IClienteOutput | null;
+  setClienteLocalizado:(cliente: IClienteOutput) => void;
 }
 
 interface AppProvideProps{
@@ -14,20 +17,26 @@ interface AppProvideProps{
 }
 
 const inicial: IContext = {
-  setAbrirModalCliente: () => {},
-  modalCliente: false,
+  setAbrirModal: () => { },
+  abrirModal: false,
   listaClientes: [],
-  setListaClientes: () => {},
+  setListaClientes: () => { },
+  tituloModal: '',
+  setTituloModal: () => { },
+  clienteLocalizado : null,
+  setClienteLocalizado: () => { }
 };
 
 export const AppContext = createContext<IContext>(inicial);
 
 export const AppProvider = ({ children }: AppProvideProps) => {
-  const [modalCliente, setAbrirModalCliente] = useState<false | true>(false);
-  const [listaClientes, setListaClientes] = useState<ICliente[]>([]);
+  const [abrirModal, setAbrirModal] = useState<false | true>(false);
+  const [listaClientes, setListaClientes] = useState<IClienteOutput[]>([]);
+  const [tituloModal, setTituloModal] = useState<string>('');
+  const [clienteLocalizado, setClienteLocalizado] = useState<IClienteOutput | null>(null)
 
   return (
-    <AppContext.Provider value={{ modalCliente, setAbrirModalCliente, listaClientes, setListaClientes }}>
+    <AppContext.Provider value={{clienteLocalizado,setClienteLocalizado, abrirModal, setAbrirModal, listaClientes, setListaClientes, tituloModal, setTituloModal }}>
       {children}
     </AppContext.Provider>
   );

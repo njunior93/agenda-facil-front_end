@@ -5,11 +5,17 @@ import PersonIcon from "@mui/icons-material/Person";
 import EventIcon from "@mui/icons-material/Event";
 import Modal from "../../../shared/modals/Modal";
 import { AppContext } from "../../../shared/context/context";
-import React from "react";
+import React, { useContext } from "react";
 
 
 const PaginaDashboard = () => {
-    const {setAbrirModalCliente} = React.useContext(AppContext);
+    const {setAbrirModal} = useContext(AppContext);
+    const {setTituloModal} = useContext(AppContext);
+
+    const abrirModal = (mov: boolean) =>{
+        setTituloModal('Cadastrar Cliente')
+        setAbrirModal(mov);
+    }
     
     return (
         <>
@@ -41,7 +47,7 @@ const PaginaDashboard = () => {
                         <Typography variant="h6" sx={{fontSize: '1rem',  backgroundColor: '#ECECEC', width: '100%', padding: '0.5rem', border: '1px solid #ddd' }} gutterBottom fontWeight="400">Ações rapidas</Typography>
 
                         <Stack spacing={2} direction="column" sx={{ mt: 2, padding: 1 }}>
-                            <Button variant="outlined" startIcon={<PersonIcon />} sx={{ color: "green" }} onClick={() => setAbrirModalCliente(true)}>Cadastrar Cliente</Button>
+                            <Button variant="outlined" startIcon={<PersonIcon />} sx={{ color: "green" }} onClick={() => abrirModal(true)}>Cadastrar Cliente</Button>
                             <Button variant="outlined" startIcon={<EventIcon />} sx={{ color: "blue" }}>Novo Agendamento</Button>
                         </Stack>
 

@@ -1,24 +1,26 @@
 import { Box, Button, List, ListItem, ListItemAvatar, ListItemText, Paper, Stack, TextField, Typography } from "@mui/material"
-import PersonIcon from "@mui/icons-material/Person";
-import EventIcon from "@mui/icons-material/Event";
 import Avatar from '@mui/material/Avatar';
 import Modal from "../../../shared/modals/Modal";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import alertaMensagem from "../../../shared/components/AlertaMensagem";
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import { getErrorMessage } from "../../../shared/utils/getError";
 import { AppContext } from "../../../shared/context/context";
-import type { ICliente } from "../../../shared/interfaces/ICliente";
+import type { IClienteInput } from "../../../shared/interfaces/IClienteInput";
+import type { IClienteOutput } from "../interfaces/IClienteOutput";
 
 const PaginaClientes = () => {
     const [alerta, setAlerta] = React.useState<React.ReactNode | null>(null);
-    const {listaClientes, setListaClientes} = React.useContext(AppContext);
+    const {listaClientes, setListaClientes} = useContext(AppContext);
+    const {setTituloModal} = useContext(AppContext);
+    const {setAbrirModal} = useContext(AppContext);
     const navigate = useNavigate();
+    const {clienteLocalizado, setClienteLocalizado} = useContext(AppContext);
 
     useEffect(() =>{
             if (!alerta) return;
@@ -47,7 +49,7 @@ const PaginaClientes = () => {
            celular: yup.string().test("celular-valido", "Formato: (99) 99999-9999", (value) => {if (!value) return true; return /^\(\d{2}\)\s\d{5}-\d{4}$/.test(value)}).required("O celular é obrigatório"),
        })
 
-    const {register, handleSubmit,reset, formState: {errors}} = useForm({resolver: yupResolver(schema)});
+    const {register, handleSubmit,reset, formState: {errors}} = useForm<IClienteInput>({resolver: yupResolver(schema) as any});
 
     const formatarFoneCel = (numero: string) => {
             let valor = numero.replace(/\D/g, "");
@@ -67,7 +69,7 @@ const PaginaClientes = () => {
             reset();
     }
     
-    const fetchGravarCliente = async (data: any) => {
+    const fetchGravarCliente = async (data: IClienteInput) => {
             const token = localStorage.getItem("token");
     
             if(!token) {
@@ -75,7 +77,7 @@ const PaginaClientes = () => {
             }
     
             try{
-                 await axios.post("http://localhost:3000/cliente/gravar-cliente",{
+                 await axios.post("http://localhost:3000/cliente/criar-cliente",{
                     nome: data.nome,
                     email: data.email,
                     telefone: data.telefone,
@@ -109,6 +111,25 @@ const PaginaClientes = () => {
                 setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
             }
     }
+
+    const fetchLocalizarCliente = async (id: string) => {
+        const token = localStorage.getItem("token");
+
+        setAbrirModal(true)
+        setTituloModal('Editar Cliente')
+
+        try{
+            const response = await axios.get(`http://localhost:3000/cliente/localizar-cliente/${id}`, {
+                headers: {Authorization: `Bearer ${token}`}
+            });
+
+        setClienteLocalizado(response.data);
+
+        }catch(error:any){
+            const mensagemErro = getErrorMessage(error);
+            setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
+        }
+    }
     
     return (
     <>
@@ -121,8 +142,8 @@ const PaginaClientes = () => {
                     </div>
                 </section>
 
-                <section className="flex flex-row gap-3 p-2 flex-1 overflow-hidden">
-                    <Paper className="basis-2/3 flex-1" elevation={3} sx={{ height:'100%', display: 'flex', flexDirection:'column', backgroundColor: '#F8F9FA' }}>
+                <section className="flex flex-row justify-center items-center gap-3 p-2 flex-1 overflow-hidden">
+                    <Paper className="basis-2/3 flex-1" elevation={3} sx={{ height:'75%', display: 'flex', flexDirection:'column', backgroundColor: '#F8F9FA' }}>
                         <Typography variant="h6" sx={{fontSize: '1rem', backgroundColor: '#ECECEC', width: '100%', padding: '0.5rem', border: '1px solid #ddd' }} gutterBottom  fontWeight="400">Formulário de Cadastro</Typography>
 
                         <form style={style} onSubmit={handleSubmit(fetchGravarCliente)}>
@@ -176,7 +197,7 @@ const PaginaClientes = () => {
                                                 </Box>
                         </form>
                     </Paper>
-                    <Paper className="basis-1/3 flex-1" elevation={3} sx={{height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: '#F8F9FA' }}>
+                    <Paper className="basis-1/3 flex-1" elevation={3} sx={{height: '75%', display: 'flex', flexDirection: 'column', backgroundColor: '#F8F9FA' }}>
                         <Typography variant="h6" sx={{fontSize: '1rem',  backgroundColor: '#ECECEC', width: '100%', padding: '0.5rem', border: '1px solid #ddd' }} gutterBottom fontWeight="400">Clientes</Typography>
 
                         <TextField 
@@ -192,8 +213,8 @@ const PaginaClientes = () => {
                                 </Typography>
                             )}
                             
-                            {listaClientes?.map((cliente: ICliente) => (
-                                <ListItem key={cliente.id} divider sx={{cursor: "pointer","&:hover": {backgroundColor: "#f5f5f5"}}}>
+                            {listaClientes?.map((cliente: IClienteOutput) => (
+                                <ListItem key={cliente.id} onClick={() => fetchLocalizarCliente(cliente.id)} divider sx={{cursor: "pointer","&:hover": {backgroundColor: "#f5f5f5"}}}>
                                     <ListItemAvatar>
                                         <Avatar sx={{bgcolor: '#1976d2'}}>
                                             {cliente.nome.charAt(0).toUpperCase()}
