@@ -16,7 +16,7 @@ import type { IClienteOutput } from "../interfaces/IClienteOutput";
 
 const PaginaClientes = () => {
     const [alerta, setAlerta] = React.useState<React.ReactNode | null>(null);
-    const {listaClientes, setListaClientes} = useContext(AppContext);
+    const {listaClientes, fetchListaClientes } = useContext(AppContext);
     const {setTituloModal} = useContext(AppContext);
     const {setAbrirModal} = useContext(AppContext);
     const navigate = useNavigate();
@@ -33,8 +33,10 @@ const PaginaClientes = () => {
     }, [alerta]);
 
     useEffect(() => {
-        fetchListaClientes();
-    }, [listaClientes])
+        if(listaClientes.length === 0){
+            fetchListaClientes();
+        }
+    }, [])
 
     const style = {
         width: '100%',
@@ -96,21 +98,21 @@ const PaginaClientes = () => {
             }
     }
 
-    const fetchListaClientes = async () => {
-        const token = localStorage.getItem("token");
+    // const fetchListaClientes = async () => {
+    //     const token = localStorage.getItem("token");
 
-        try{
-            const response = await axios.get("http://localhost:3000/cliente/listar-clientes", {
-                headers: {Authorization: `Bearer ${token}`}
-            });
+    //     try{
+    //         const response = await axios.get("http://localhost:3000/cliente/listar-clientes", {
+    //             headers: {Authorization: `Bearer ${token}`}
+    //         });
 
-            setListaClientes(response.data);
+    //         setListaClientes(response.data);
 
-        }catch(error:any){
-                const mensagemErro = getErrorMessage(error);
-                setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
-            }
-    }
+    //     }catch(error:any){
+    //             const mensagemErro = getErrorMessage(error);
+    //             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
+    //         }
+    // }
 
     const fetchLocalizarCliente = async (id: string) => {
         const token = localStorage.getItem("token");
