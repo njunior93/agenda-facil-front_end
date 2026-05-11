@@ -4,14 +4,28 @@ import { useContext, useState } from "react";
 import { Box, Typography, IconButton, Paper } from "@mui/material";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { AppContext } from "../context/context";
-import type { IAgendamento } from "../../features/agendamentos/interfaces/IAgendamento";
+import type { IAgendamentoOutput } from "../../features/agendamentos/interfaces/IAgendamentoOutput";
+import Tooltip from '@mui/material/Tooltip';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { getErrorMessage } from "../utils/getError";
+import alertaMensagem from "./AlertaMensagem";
+import React from "react";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import Modal from "../modals/Modal";
 
 dayjs.locale("pt-br");
 
 export default function CalendarioCustom() {
 
+  const [alerta, setAlerta] = React.useState<React.ReactNode | null>(null);
+  const {setTituloModal} = useContext(AppContext);
+  const {setAbrirModal} = useContext(AppContext);
+  const navigate = useNavigate();
+  const {setAgendamentoLocalizado} = useContext(AppContext);
+
   const [dataAtual, setDataAtual] = useState(dayjs());
-  const {listaAgendamentos} = useContext(AppContext);
+  const {listaAgendamentos, setListaAgendamentos} = useContext(AppContext);
 
   const inicioMes = dataAtual.startOf("month");
   const fimMes = dataAtual.endOf("month");
@@ -21,6 +35,32 @@ export default function CalendarioCustom() {
 
   const dias = [];
   let dia = inicioCalendario;
+
+  const fetchLocalizarAgendamento = async (id: string) => {
+    const token = localStorage.getItem('token');
+
+    if(!token) {
+      navigate("/");
+      return;
+    }
+
+    try{
+      const response = await axios.get(`http://localhost:3000/agendamento/localizar-agendamento/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setAgendamentoLocalizado(response.data);
+
+      setTituloModal('Editar Agendamento');
+      setAbrirModal(true);
+    }catch(error:any){
+      const mensagemErro = getErrorMessage(error);
+      setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
+    }
+  }
+
 
   while (dia.isBefore(fimCalendario) || dia.isSame(fimCalendario)) {
     dias.push(dia);
@@ -59,14 +99,19 @@ export default function CalendarioCustom() {
       <Box
         display="grid"
         gridTemplateColumns="repeat(7, 1fr)"
-        flex={1}
+        gridAutoRows="120px"
         gap={1}
+        sx={{
+          overflowY: "auto",
+          flex: 1,
+          minHeight: 0,
+        }}
       >
         {dias.map((d, index) => {
           const isMesAtual = d.month() === dataAtual.month();
 
           const agendamentosDia = listaAgendamentos.filter(
-            (agendamento: IAgendamento) =>
+            (agendamento: IAgendamentoOutput) =>
               dayjs(agendamento.data).format("YYYY-MM-DD") ===
               d.format("YYYY-MM-DD")
           );
@@ -75,6 +120,8 @@ export default function CalendarioCustom() {
             <Box
               key={index}
               sx={{
+                overflow: "hidden",
+                minHeight: 0,
                 border: "1px solid #ccc",
                 borderRadius: 1,
                 p: 1,
@@ -91,33 +138,60 @@ export default function CalendarioCustom() {
               <Typography variant="caption">{d.date()}</Typography>
 
               <Box
-                  display="flex"
-                  flexDirection="column"
-                  gap={0.5}
-                  sx={{
-                    overflowY: "auto",
-                    maxHeight: 100,
+                display="flex"
+                flexDirection="column"
+                gap={0.5}
+                sx={{
+                  overflowY: "auto",
+                  maxHeight: 120,
+                  flex:1
                 }}
                 >
                 {agendamentosDia.map((agendamento) => (
-                  <Box
+                  <>
+                  <Tooltip
                     key={agendamento.id}
-                    sx={{
-                      backgroundColor: "#1976d2",
-                      color: "#fff",
-                      borderRadius: 1,
-                      px: 0.5,
-                      py: 0.3,
-                      fontSize: "10px",
-                    }}
-                  >
-                    {agendamento.hora}
-                  </Box>
-                ))}
+                    title={
+                      <>
+                        <div>
+                          <strong>Cliente:</strong> {agendamento.cliente.nome}
+                        </div>
+
+                        <div>
+                          <strong>Serviço:</strong> {agendamento.servico}
+                        </div>
+
+                        <div>
+                          <strong>Status:</strong> {agendamento.status === 'a' ? 'Agendado' : agendamento.status === 'c' ? 'Cancelado' : 'Finalizado'}
+                        </div>
+                      </>
+                    }
+                    arrow
+                    placement="top">                
+                    <Box
+                      key={agendamento.id}
+                       onClick={() => fetchLocalizarAgendamento(agendamento.id.toString())}
+                      sx={{
+                        backgroundColor: 
+                          agendamento.status === 'a' ? '#F59E0B' :
+                          agendamento.status === 'c' ? '#EF4444' :
+                          '#10B981',
+                        color: "#fff",
+                        borderRadius: 1,
+                        px: 0.5,
+                        py: 0.3,
+                        fontSize: "12px",
+                      }}
+                    >
+                      {agendamento.hora}
+                    </Box>
+                  </Tooltip> 
+                  </>))}
               </Box>
             </Box>
           );
         })}
+        <Modal/>
       </Box>
       </>
   );

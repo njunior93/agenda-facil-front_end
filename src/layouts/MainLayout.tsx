@@ -4,13 +4,13 @@ import SideBar from "../shared/components/SideBar";
 
 const MainLayout = () => {
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", height: "100vh" }}>
       <SideBar />
 
-      <div style={{ flexGrow: 1 }}>
+      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <NavBar />
 
-        <main className="h-screen w-full" style={{ padding: 20 }}>
+        <main className="h-screen w-full" style={{ padding: 20, flex:1, overflow: "auto" }}>
           <Outlet />
         </main>
 

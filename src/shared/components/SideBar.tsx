@@ -26,7 +26,7 @@ const SideBar = () => {
         <Typography sx={{ pl: 2, pt: 2, pb: 1, fontWeight: "bold", color: "white" }}>
           GESTÃO
         </Typography>
-        {['Clientes', 'Agendamentos', 'Serviços'].map((text, index) => (
+        {['Clientes', 'Agendamentos'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton onClick={() => navigate(`/${text.toLowerCase()}`)}>
               <ListItemIcon>

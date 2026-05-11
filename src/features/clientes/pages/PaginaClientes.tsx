@@ -76,6 +76,7 @@ const PaginaClientes = () => {
     
             if(!token) {
                 navigate("/");
+                return;
             }
     
             try{
@@ -117,8 +118,10 @@ const PaginaClientes = () => {
     const fetchLocalizarCliente = async (id: string) => {
         const token = localStorage.getItem("token");
 
-        setAbrirModal(true)
-        setTituloModal('Editar Cliente')
+        if(!token) {
+            navigate("/");
+            return;
+        }
 
         try{
             const response = await axios.get(`http://localhost:3000/cliente/localizar-cliente/${id}`, {
@@ -126,6 +129,9 @@ const PaginaClientes = () => {
             });
 
         setClienteLocalizado(response.data);
+  
+        setTituloModal('Editar Cliente')
+        setAbrirModal(true)
 
         }catch(error:any){
             const mensagemErro = getErrorMessage(error);

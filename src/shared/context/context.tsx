@@ -1,7 +1,7 @@
 import { createContext, useState, type ReactNode } from 'react';
 import type { IClienteOutput } from '../../features/clientes/interfaces/IClienteOutput';
 import axios from 'axios';
-import type { IAgendamento } from '../../features/agendamentos/interfaces/IAgendamento';
+import type { IAgendamentoOutput } from '../../features/agendamentos/interfaces/IAgendamentoOutput';
 
 interface IContext {
   setAbrirModal: (open: false | true) => void;
@@ -9,12 +9,15 @@ interface IContext {
   listaClientes: IClienteOutput[];
   setListaClientes: (clientes: IClienteOutput[]) => void;
   fetchListaClientes: () => Promise<void>;
-  listaAgendamentos: IAgendamento[];
-  setListaAgendamentos: (agendamento: IAgendamento[]) => void;
+  fetchListaAgendamentos: () => Promise<void>;
+  listaAgendamentos: IAgendamentoOutput[];
+  setListaAgendamentos: (agendamento: IAgendamentoOutput[]) => void;
   tituloModal: string;
   setTituloModal: (titulo: string) => void;
   clienteLocalizado: IClienteOutput | null;
   setClienteLocalizado:(cliente: IClienteOutput) => void;
+  agendamentoLocalizado: IAgendamentoOutput | null;
+  setAgendamentoLocalizado:(agendamento: IAgendamentoOutput) => void;
 }
 
 interface AppProvideProps{
@@ -27,12 +30,16 @@ const inicial: IContext = {
   listaClientes: [],
   setListaClientes: () => { },
   fetchListaClientes: async () => { },
+  fetchListaAgendamentos: async () => { },
   tituloModal: '',
   setTituloModal: () => { },
   clienteLocalizado: null,
   setClienteLocalizado: () => { },
   listaAgendamentos: [],
   setListaAgendamentos: () => { },
+  agendamentoLocalizado: null,
+  setAgendamentoLocalizado: () => { }
+
 };
 
 export const AppContext = createContext<IContext>(inicial);
@@ -42,7 +49,8 @@ export const AppProvider = ({ children }: AppProvideProps) => {
   const [listaClientes, setListaClientes] = useState<IClienteOutput[]>([]);
   const [tituloModal, setTituloModal] = useState<string>('');
   const [clienteLocalizado, setClienteLocalizado] = useState<IClienteOutput | null>(null);
-  const [listaAgendamentos, setListaAgendamentos] = useState<IAgendamento[]>([]);
+  const [listaAgendamentos, setListaAgendamentos] = useState<IAgendamentoOutput[]>([]);
+  const [agendamentoLocalizado, setAgendamentoLocalizado] = useState<IAgendamentoOutput | null>(null);
 
   const fetchListaClientes = async () => {
           const token = localStorage.getItem("token");
@@ -59,8 +67,23 @@ export const AppProvider = ({ children }: AppProvideProps) => {
           }
   }
 
+  const fetchListaAgendamentos = async () => {
+      const token = localStorage.getItem("token");
+  
+      try{
+          const response = await axios.get("http://localhost:3000/agendamento/listar-agendamentos", {
+              headers: {Authorization: `Bearer ${token}`}
+          });
+          
+          setListaAgendamentos(response.data);
+      }catch(error:any){
+          console.log(error);
+      }
+    }
+
+
   return (
-    <AppContext.Provider value={{clienteLocalizado,setClienteLocalizado, abrirModal, setAbrirModal, listaClientes, setListaClientes, fetchListaClientes,tituloModal, setTituloModal,listaAgendamentos, setListaAgendamentos}}>
+    <AppContext.Provider value={{fetchListaAgendamentos,agendamentoLocalizado, setAgendamentoLocalizado,clienteLocalizado,setClienteLocalizado, abrirModal, setAbrirModal, listaClientes, setListaClientes, fetchListaClientes,tituloModal, setTituloModal,listaAgendamentos, setListaAgendamentos}}>
       {children}
     </AppContext.Provider>
   );

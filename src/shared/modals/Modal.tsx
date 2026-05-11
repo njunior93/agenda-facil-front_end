@@ -10,9 +10,11 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import alertaMensagem from '../components/AlertaMensagem';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useContext, useEffect } from 'react';
 import { getErrorMessage } from '../utils/getError';
 import type { IClienteInput } from '../interfaces/IClienteInput';
+import type { IAgendamentoUpdate } from '../../features/agendamentos/interfaces/IAgendamentoUpdate';
 
 
 const ModalComponent = () => {
@@ -21,6 +23,8 @@ const ModalComponent = () => {
     const [alerta, setAlerta] = React.useState<React.ReactNode | null>(null);
     const navigate = useNavigate();
     const {clienteLocalizado} = useContext(AppContext);
+    const {agendamentoLocalizado} = useContext(AppContext);
+    const {fetchListaAgendamentos} = useContext(AppContext);
 
     useEffect(() =>{
             if (!alerta) return;
@@ -31,6 +35,10 @@ const ModalComponent = () => {
     
             return () => clearTimeout(timer);
     }, [alerta]);
+
+    useEffect(() =>{
+        fetchListaAgendamentos();
+    }, []);
 
     useEffect(() =>{
         if(tituloModal === 'Editar Cliente' && clienteLocalizado){
@@ -89,7 +97,7 @@ const ModalComponent = () => {
         }
     }
 
-    const cancelarCliente = () =>{
+    const sairModal = () =>{
         reset();
         setAbrirModal(false);
         setTituloModal('')
@@ -151,6 +159,33 @@ const ModalComponent = () => {
         }
     }
 
+    const fetchEditarAgendamento = async (data: IAgendamentoUpdate) =>{
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            navigate("/");
+        }
+
+        try{
+            await axios.patch(`http://localhost:3000/agendamento/editar-agendamento/${agendamentoLocalizado?.id}`,{
+                status: data.status
+            },
+            {
+                headers: {Authorization: `Bearer ${token}`}
+            });
+
+            await fetchListaAgendamentos();
+
+            reset();
+            setAbrirModal(false);
+            setTituloModal('')           
+            setAlerta(alertaMensagem("Agendamento atualizado com sucesso!", "success", <CheckCircleIcon/>));
+        }catch(error: any){
+            const mensagemErro = getErrorMessage(error);
+            setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
+        }
+    }
+
     return (
         <>
          <Modal open={abrirModal} onClose={(_event: object,reason) => reason != 'backdropClick' && setAbrirModal(false)}>
@@ -203,8 +238,8 @@ const ModalComponent = () => {
                             <Button type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}}>
                                 Gravar
                             </Button>
-                            <Button  onClick={() => cancelarCliente()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
-                                Cancelar
+                            <Button  onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
+                                Sair
                             </Button>
                         </Box>
                         </form>
@@ -256,13 +291,33 @@ const ModalComponent = () => {
                             <Button type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}}>
                                 Gravar
                             </Button>
-                            <Button  onClick={() => cancelarCliente()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
-                                Cancelar
+                            <Button  onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
+                                Sair
                             </Button>
                         </Box>
                         </form>
                     )}
                     
+                    {tituloModal === 'Editar Agendamento' && agendamentoLocalizado && (
+                        <Box sx={{ mt: 2 }}>
+                            <Box sx={{ mb: 2, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                                <Typography variant="body1"><strong>Cliente:</strong> {agendamentoLocalizado.cliente?.nome}</Typography>
+                                <Typography variant="body2"><strong>Serviço:</strong> {agendamentoLocalizado.servico}</Typography>
+                                <Typography variant="body2"><strong>Status:</strong> {agendamentoLocalizado.status === 'a' ? 'Agendado' : agendamentoLocalizado.status === 'f' ? 'Finalizado' : 'Cancelado'}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 2 }}>
+                                <Button onClick={() => {fetchEditarAgendamento({ status: 'f' });}} sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "rgb(32, 112, 8)"}}}>
+                                    Finalizar
+                                </Button>
+                                <Button  onClick={() => {fetchEditarAgendamento({ status: 'c' });}} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "#fc9208ff"}}}>
+                                    Cancelar
+                                </Button>
+                                <Button  onClick={() => sairModal()} sx={{backgroundColor: "rgb(87, 84, 82)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(27, 27, 27)",},}}>
+                                    Sair
+                                </Button>
+                            </Box>
+                        </Box>
+                    )}
 
                 </Box>
          </Modal>
