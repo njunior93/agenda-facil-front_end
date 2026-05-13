@@ -15,9 +15,9 @@ interface IContext {
   tituloModal: string;
   setTituloModal: (titulo: string) => void;
   clienteLocalizado: IClienteOutput | null;
-  setClienteLocalizado:(cliente: IClienteOutput) => void;
+  setClienteLocalizado:(cliente: IClienteOutput | null) => void;
   agendamentoLocalizado: IAgendamentoOutput | null;
-  setAgendamentoLocalizado:(agendamento: IAgendamentoOutput) => void;
+  setAgendamentoLocalizado:(agendamento: IAgendamentoOutput | null) => void;
 }
 
 interface AppProvideProps{
@@ -79,7 +79,7 @@ export const AppProvider = ({ children }: AppProvideProps) => {
       }catch(error:any){
           console.log(error);
       }
-    }
+  }
 
 
   return (

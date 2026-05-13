@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { AppContext } from '../context/context';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import alertaMensagem from '../components/AlertaMensagem';
@@ -22,9 +22,10 @@ const ModalComponent = () => {
     const {tituloModal, setTituloModal} = useContext(AppContext)
     const [alerta, setAlerta] = React.useState<React.ReactNode | null>(null);
     const navigate = useNavigate();
-    const {clienteLocalizado} = useContext(AppContext);
-    const {agendamentoLocalizado} = useContext(AppContext);
+    const {clienteLocalizado, setClienteLocalizado} = useContext(AppContext);
+    const {agendamentoLocalizado, setAgendamentoLocalizado} = useContext(AppContext);
     const {fetchListaAgendamentos} = useContext(AppContext);
+    const {fetchListaClientes} = useContext(AppContext);
 
     useEffect(() =>{
             if (!alerta) return;
@@ -100,7 +101,9 @@ const ModalComponent = () => {
     const sairModal = () =>{
         reset();
         setAbrirModal(false);
-        setTituloModal('')
+        setTituloModal('');
+        setClienteLocalizado(null);
+        setAgendamentoLocalizado(null);
     }
 
     const fetchCriarCliente = async (data: IClienteInput) => {
@@ -120,10 +123,12 @@ const ModalComponent = () => {
             {
                 headers: {Authorization: `Bearer ${token}`}
             });
+
+            await fetchListaClientes();
             
             reset();
             setAbrirModal(false);  
-            setTituloModal('')         
+            setTituloModal('');      
             setAlerta(alertaMensagem("Cliente cadastrado com sucesso!", "success", <ReportProblemIcon/>));            
         }catch(error:any){
             const mensagemErro = getErrorMessage(error);
@@ -149,10 +154,41 @@ const ModalComponent = () => {
                 headers: {Authorization: `Bearer ${token}`}
             });
 
+            await fetchListaClientes();
+            
             reset();
             setAbrirModal(false);
-            setTituloModal('')           
+            setTituloModal('')
+            setClienteLocalizado(null);
             setAlerta(alertaMensagem("Cliente atualizado com sucesso!", "success", <ReportProblemIcon/>));
+        }catch(error: any){
+            const mensagemErro = getErrorMessage(error);
+            setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
+        }
+    }
+
+    const fetchExcluirCliente = async (clienteId: string | undefined) =>{
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            navigate("/");
+            return;
+        }
+
+        try{
+
+            await axios.delete(`http://localhost:3000/cliente/excluir-cliente/${clienteId}`,
+            {
+                headers: {Authorization: `Bearer ${token}`}
+            });
+
+            await fetchListaClientes();
+
+            reset();
+            setAbrirModal(false);
+            setTituloModal('')
+            setClienteLocalizado(null);           
+            setAlerta(alertaMensagem("Cliente excluido com sucesso!", "success", <CheckCircleIcon/>));
         }catch(error: any){
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
@@ -178,7 +214,8 @@ const ModalComponent = () => {
 
             reset();
             setAbrirModal(false);
-            setTituloModal('')           
+            setTituloModal('')
+            setAgendamentoLocalizado(null);          
             setAlerta(alertaMensagem("Agendamento atualizado com sucesso!", "success", <CheckCircleIcon/>));
         }catch(error: any){
             const mensagemErro = getErrorMessage(error);
@@ -186,6 +223,35 @@ const ModalComponent = () => {
         }
     }
 
+    const fetchExcluirAgendamento = async (agendamentoId: string | undefined)=>{
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            navigate("/");
+            return;
+         }
+
+        try{
+
+            await axios.delete(`http://localhost:3000/agendamento/excluir-agendamento/${agendamentoId}`,
+            {
+                headers: {Authorization: `Bearer ${token}`}
+            });
+
+            await fetchListaAgendamentos();
+            await fetchListaClientes();
+
+            reset();
+            setAbrirModal(false);
+            setTituloModal('')
+            setAgendamentoLocalizado(null);           
+            setAlerta(alertaMensagem("Agendamento excluido com sucesso!", "success", <CheckCircleIcon/>));
+        }catch(error: any){
+            const mensagemErro = getErrorMessage(error);
+            setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
+        }
+    }
+    
     return (
         <>
          <Modal open={abrirModal} onClose={(_event: object,reason) => reason != 'backdropClick' && setAbrirModal(false)}>
@@ -240,6 +306,9 @@ const ModalComponent = () => {
                             </Button>
                             <Button  onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
                                 Sair
+                            </Button>
+                            <Button  onClick={() => { if (clienteLocalizado) fetchExcluirCliente(clienteLocalizado.id) }} sx={{backgroundColor: "rgb(241, 40, 26)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(255, 0, 0)",},}}>
+                                Excluir cliente
                             </Button>
                         </Box>
                         </form>
@@ -306,26 +375,33 @@ const ModalComponent = () => {
                                 <Typography variant="body2"><strong>Status:</strong> {agendamentoLocalizado.status === 'a' ? 'Agendado' : agendamentoLocalizado.status === 'f' ? 'Finalizado' : 'Cancelado'}</Typography>
                             </Box>
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 2 }}>
-                                <Button onClick={() => {fetchEditarAgendamento({ status: 'f' });}} sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "rgb(32, 112, 8)"}}}>
-                                    Finalizar
-                                </Button>
-                                <Button  onClick={() => {fetchEditarAgendamento({ status: 'c' });}} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "#fc9208ff"}}}>
-                                    Cancelar
-                                </Button>
+                                {agendamentoLocalizado.status === 'a' && (
+                                    <>
+                                        <Button onClick={() => {fetchEditarAgendamento({ status: 'f' });}} sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "rgb(32, 112, 8)"}}}>
+                                            Finalizar
+                                        </Button>
+
+                                        <Button  onClick={() => {fetchEditarAgendamento({ status: 'c' });}} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "#fc9208ff"}}}>
+                                            Cancelar
+                                        </Button>
+                                    </>
+                                )}
+                                {agendamentoLocalizado.status === 'c' && (
+                                    <Button  onClick={() => {fetchExcluirAgendamento(agendamentoLocalizado.id)}} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "#fc9208ff"}}}>
+                                        Excluir
+                                    </Button>
+                                )}
                                 <Button  onClick={() => sairModal()} sx={{backgroundColor: "rgb(87, 84, 82)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(27, 27, 27)",},}}>
                                     Sair
                                 </Button>
                             </Box>
                         </Box>
                     )}
-
                 </Box>
          </Modal>
 
          {alerta && <Box sx={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1301,pointerEvents: 'none' }}>{alerta}</Box>}
-        </>
-       
-
+        </>     
     );
 };
 

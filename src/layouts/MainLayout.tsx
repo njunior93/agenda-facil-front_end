@@ -10,7 +10,7 @@ const MainLayout = () => {
       <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <NavBar />
 
-        <main className="h-screen w-full" style={{ padding: 20, flex:1, overflow: "auto" }}>
+        <main className="min-h-screen w-full flex justify-center" style={{ padding: 20, flex:1, overflow: "auto" }}>
           <Outlet />
         </main>
 

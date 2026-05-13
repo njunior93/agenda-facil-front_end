@@ -110,11 +110,12 @@ export default function CalendarioCustom() {
         {dias.map((d, index) => {
           const isMesAtual = d.month() === dataAtual.month();
 
-          const agendamentosDia = listaAgendamentos.filter(
-            (agendamento: IAgendamentoOutput) =>
+          const agendamentosDia = listaAgendamentos
+            .filter((agendamento: IAgendamentoOutput) =>
               dayjs(agendamento.data).format("YYYY-MM-DD") ===
               d.format("YYYY-MM-DD")
-          );
+            )
+            .sort((a, b) => a.hora.localeCompare(b.hora));
 
           return (
             <Box

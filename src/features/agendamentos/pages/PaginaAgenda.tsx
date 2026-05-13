@@ -36,14 +36,8 @@ const PaginaAgenda = () => {
     }, [alerta]);
 
     useEffect(() => {
-            if(listaClientes.length === 0){
-                fetchListaClientes();
-            }
-    }, [])
-
-    useEffect(() => {
-                fetchListaAgendamento();
-
+        fetchListaClientes();      
+        fetchListaAgendamento();
     }, [])
 
     const schema = yup.object({
@@ -114,9 +108,9 @@ const PaginaAgenda = () => {
     }
 
     return(
-        <div className="w-full h-screen">
+        <div className="w-full max-w-6xl mx-auto px-4">
             <section>
-                <div className="flex flex-col  items-center justify-center">
+                <div className="flex flex-col items-center justify-center">
                     <Typography variant="h4" component="h1" fontWeight="bold" color="#707070">
                     <span className="underline decoration-pink-500">Gestão</span> de Agendamentos
                     </Typography>
@@ -126,7 +120,7 @@ const PaginaAgenda = () => {
             <section className="flex flex-col items-center gap-3 p-2 flex-1 overflow-hidden">
 
                 <div className="w-full max-w-6xl">
-                    <Paper  elevation={3} sx={{ width: '100%' , display: 'flex', flexDirection:'column', gap: 2, backgroundColor: '#1D2937', padding: '1rem' }}>
+                    <Paper  elevation={3} sx={{ width: '100%' , display: 'flex', flexDirection:'column', alignItems: 'center', gap: 2, backgroundColor: '#1D2937', padding: '1rem' }}>
                     
                         <Typography variant="h6"  sx={{fontSize: '1rem', backgroundColor: '#1D2937', width: '100%', padding: '0.5rem', color:'#ECECEC' }} gutterBottom  fontWeight="400">Preencha os dados</Typography>
 
