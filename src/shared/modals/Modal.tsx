@@ -1,11 +1,11 @@
 import * as React from 'react';
-import {Box, Modal, TextField} from '@mui/material';
+import {Box, MenuItem, Modal, TextField} from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { AppContext } from '../context/context';
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { set, useForm } from 'react-hook-form';
+import { Controller, set, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import alertaMensagem from '../components/AlertaMensagem';
@@ -14,6 +14,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useContext, useEffect } from 'react';
 import { getErrorMessage } from '../utils/getError';
 import type { IClienteInput } from '../interfaces/IClienteInput';
+import type { IAgendamentoInput } from '../../features/agendamentos/interfaces/IAgendamentoInput';
+import { tiposServico, servicosPorTipo } from "../../data/servicos";
 import type { IAgendamentoUpdate } from '../../features/agendamentos/interfaces/IAgendamentoUpdate';
 
 
@@ -25,7 +27,7 @@ const ModalComponent = () => {
     const {clienteLocalizado, setClienteLocalizado} = useContext(AppContext);
     const {agendamentoLocalizado, setAgendamentoLocalizado} = useContext(AppContext);
     const {fetchListaAgendamentos} = useContext(AppContext);
-    const {fetchListaClientes} = useContext(AppContext);
+    const {fetchListaClientes, listaClientes} = useContext(AppContext);
 
     useEffect(() =>{
             if (!alerta) return;
@@ -38,12 +40,8 @@ const ModalComponent = () => {
     }, [alerta]);
 
     useEffect(() =>{
-        fetchListaAgendamentos();
-    }, []);
-
-    useEffect(() =>{
         if(tituloModal === 'Editar Cliente' && clienteLocalizado){
-            reset({
+            resetCliente({
                 nome: clienteLocalizado.nome || '' ,
                 email: clienteLocalizado.email || '',
                 telefone: formatarFoneCel(clienteLocalizado.telefone) || '',
@@ -54,7 +52,7 @@ const ModalComponent = () => {
 
     useEffect(() =>{
         if(tituloModal === 'Cadastrar Cliente'){
-            reset({
+            resetCliente({
                 nome: '' ,
                 email: '',
                 telefone:'',
@@ -75,14 +73,28 @@ const ModalComponent = () => {
         borderRadius: 2,
     }
 
-    const schema = yup.object({
+    const schemaCliente = yup.object({
         nome: yup.string().required("O nome é obrigatório"),
         email: yup.string().email("Email inválido").required("O email é obrigatório"),
         telefone: yup.string().test("telefone-valido", "Formato: (99) 9999-9999", (value) => {if (!value) return true; return /^\(\d{2}\)\s\d{4}-\d{4}$/.test(value)}).optional(),
         celular: yup.string().test("celular-valido", "Formato: (99) 99999-9999", (value) => {if (!value) return true; return /^\(\d{2}\)\s\d{5}-\d{4}$/.test(value)}).required("O celular é obrigatório"),
     })
 
-    const {register, handleSubmit,reset, formState: {errors}} = useForm<IClienteInput>({resolver: yupResolver(schema)} as any);
+    const schemaAgendamento = yup.object({
+        tipoServico: yup.string().required("Campo obrigatorio"),
+        servico: yup.string().required("Campo obrigatorio"),
+        data: yup.string().required('Campo obrigatorio').matches(/^\d{4}-\d{2}-\d{2}$/, "Formato inválido"),
+        hora: yup.string().required('Campo obrigatorio'),
+        cliente_id: yup.string().required('Campo obrigatorio')
+    })
+
+  
+    const {register: registerCliente, handleSubmit: handleSubmitCliente,reset: resetCliente, watch: watchCliente,formState: {errors: errorsCliente}} = useForm<IClienteInput>({resolver: yupResolver(schemaCliente)} as any);
+    const {register: registerAgendamento, handleSubmit: handleSubmitAgendamento,reset: resetAgendamento, control: controlAgendamento, watch: watchAgendamento,formState: {errors: errorsAgendamento}} = useForm<IAgendamentoInput>({resolver: yupResolver(schemaAgendamento)} as any);
+
+
+    const tipoSelecionado = watchAgendamento("tipoServico");
+
 
     const formatarFoneCel = (numero: string) => {
         let valor = numero.replace(/\D/g, "");
@@ -99,7 +111,8 @@ const ModalComponent = () => {
     }
 
     const sairModal = () =>{
-        reset();
+        resetCliente();
+        resetAgendamento();
         setAbrirModal(false);
         setTituloModal('');
         setClienteLocalizado(null);
@@ -126,7 +139,7 @@ const ModalComponent = () => {
 
             await fetchListaClientes();
             
-            reset();
+            resetCliente();
             setAbrirModal(false);  
             setTituloModal('');      
             setAlerta(alertaMensagem("Cliente cadastrado com sucesso!", "success", <ReportProblemIcon/>));            
@@ -156,7 +169,7 @@ const ModalComponent = () => {
 
             await fetchListaClientes();
             
-            reset();
+            resetCliente();
             setAbrirModal(false);
             setTituloModal('')
             setClienteLocalizado(null);
@@ -184,7 +197,7 @@ const ModalComponent = () => {
 
             await fetchListaClientes();
 
-            reset();
+            resetCliente();
             setAbrirModal(false);
             setTituloModal('')
             setClienteLocalizado(null);           
@@ -193,6 +206,39 @@ const ModalComponent = () => {
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
         }
+    }
+
+    const fetchCriarAgendamento = async (data: IAgendamentoInput) => {
+            const token = localStorage.getItem("token");
+    
+            if(!token){
+                navigate("/");
+                return;
+            }
+    
+            try{
+                await axios.post("http://localhost:3000/agendamento/criar-agendamento",{
+                    tipoServico: data.tipoServico,
+                    servico: data.servico,
+                    data: data.data,
+                    hora: data.hora,
+                    cliente_id: data.cliente_id
+                },
+                {
+                    headers: {Authorization: `Bearer ${token}`}
+                });
+
+                await fetchListaAgendamentos();
+    
+                setAlerta(alertaMensagem("Agendamento criado com sucesso!", "success", <ReportProblemIcon />));
+                resetAgendamento();
+                setAbrirModal(false);  
+                setTituloModal('');
+                resetAgendamento();
+            }catch(error:any){
+                const mensagemErro = getErrorMessage(error);
+                setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon />));
+            }
     }
 
     const fetchEditarAgendamento = async (data: IAgendamentoUpdate) =>{
@@ -212,7 +258,7 @@ const ModalComponent = () => {
 
             await fetchListaAgendamentos();
 
-            reset();
+            resetAgendamento();
             setAbrirModal(false);
             setTituloModal('')
             setAgendamentoLocalizado(null);          
@@ -241,7 +287,7 @@ const ModalComponent = () => {
             await fetchListaAgendamentos();
             await fetchListaClientes();
 
-            reset();
+            resetAgendamento();
             setAbrirModal(false);
             setTituloModal('')
             setAgendamentoLocalizado(null);           
@@ -259,21 +305,21 @@ const ModalComponent = () => {
                     <Typography variant="h6" component="h2">{tituloModal}</Typography>
 
                     {tituloModal === 'Editar Cliente' && (
-                        <form onSubmit={handleSubmit(fetchEditarCliente)}>
+                        <form onSubmit={handleSubmitCliente(fetchEditarCliente)}>
                             <TextField
                                 label="Nome"
-                                {...register("nome")}
-                                error={!!errors.nome}
-                                helperText={errors.nome?.message}
+                                {...registerCliente("nome")}
+                                error={!!errorsCliente.nome}
+                                helperText={errorsCliente.nome?.message}
                                 fullWidth
                             />
 
                         <Box sx={{ mt: 2 }}>
                             <TextField
                                 label="Email"
-                                {...register("email")}
-                                error={!!errors.email}
-                                helperText={errors.email?.message}
+                                {...registerCliente("email")}
+                                error={!!errorsCliente.email}
+                                helperText={errorsCliente.email?.message}
                                 fullWidth
                             />
                         </Box>
@@ -281,9 +327,9 @@ const ModalComponent = () => {
                             <TextField
                                 label="Telefone"
                                 placeholder='(99) 9999-9999'
-                                {...register("telefone")}
-                                error={!!errors.telefone}
-                                helperText={errors.telefone?.message}
+                                {...registerCliente("telefone")}
+                                error={!!errorsCliente.telefone}
+                                helperText={errorsCliente.telefone?.message}
                                 onChange={(e) =>{
                                     e.target.value = formatarFoneCel(e.target.value);
                                 }}
@@ -292,9 +338,9 @@ const ModalComponent = () => {
                         <TextField
                                 label="Celular"
                                 placeholder='(99) 99999-9999'
-                                {...register("celular")}
-                                error={!!errors.celular}
-                                helperText={errors.celular?.message}
+                                {...registerCliente("celular")}
+                                error={!!errorsCliente.celular}
+                                helperText={errorsCliente.celular?.message}
                                 onChange={(e) =>{
                                     e.target.value = formatarFoneCel(e.target.value);
                                 }}
@@ -315,21 +361,21 @@ const ModalComponent = () => {
                     )}
 
                     {tituloModal === 'Cadastrar Cliente' && (
-                        <form onSubmit={handleSubmit(fetchCriarCliente)}>
+                        <form onSubmit={handleSubmitCliente(fetchCriarCliente)}>
                             <TextField
                                 label="Nome"
-                                {...register("nome")}
-                                error={!!errors.nome}
-                                helperText={errors.nome?.message}
+                                {...registerCliente("nome")}
+                                error={!!errorsCliente.nome}
+                                helperText={errorsCliente.nome?.message}
                                 fullWidth
                             />
 
                         <Box sx={{ mt: 2 }}>
                             <TextField
                                 label="Email"
-                                {...register("email")}
-                                error={!!errors.email}
-                                helperText={errors.email?.message}
+                                {...registerCliente("email")}
+                                error={!!errorsCliente.email}
+                                helperText={errorsCliente.email?.message}
                                 fullWidth
                             />
                         </Box>
@@ -337,9 +383,9 @@ const ModalComponent = () => {
                             <TextField
                                 label="Telefone"
                                 placeholder='(99) 9999-9999'
-                                {...register("telefone")}
-                                error={!!errors.telefone}
-                                helperText={errors.telefone?.message}
+                                {...registerCliente("telefone")}
+                                error={!!errorsCliente.telefone}
+                                helperText={errorsCliente.telefone?.message}
                                 onChange={(e) =>{
                                     e.target.value = formatarFoneCel(e.target.value);
                                 }}
@@ -348,14 +394,150 @@ const ModalComponent = () => {
                         <TextField
                                 label="Celular"
                                 placeholder='(99) 99999-9999'
-                                {...register("celular")}
-                                error={!!errors.celular}
-                                helperText={errors.celular?.message}
+                                {...registerCliente("celular")}
+                                error={!!errorsCliente.celular}
+                                helperText={errorsCliente.celular?.message}
                                 onChange={(e) =>{
                                     e.target.value = formatarFoneCel(e.target.value);
                                 }}
                             />
                         </Box>
+                        <Box sx={{ mt: 2 }}>
+                            <Button type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}}>
+                                Gravar
+                            </Button>
+                            <Button  onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
+                                Sair
+                            </Button>
+                        </Box>
+                        </form>
+                    )}
+
+                    {tituloModal === 'Cadastrar Agendamento' && (
+                        <form className='flex flex-col gap-2' onSubmit={handleSubmitAgendamento(fetchCriarAgendamento)}>
+                            <Controller
+                                name="tipoServico"
+                                    control={controlAgendamento}
+                                    render={({ field }) => (
+                                        <TextField
+                                            select
+                                            fullWidth
+                                            label="Tipo de serviço"
+                                            {...field}
+                                            sx={{
+                                                backgroundColor: "#E2E0E0",
+                                                borderRadius: 1,
+                                                flexShrink: 0,
+                                                }}
+                                                error={!!errorsAgendamento.tipoServico}
+                                                helperText={errorsAgendamento.tipoServico?.message}
+                                                >
+                                                {tiposServico.map((tipo) => (
+                                                    <MenuItem key={tipo} value={tipo}>
+                                                    {tipo}
+                                                    </MenuItem>
+                                                ))}
+                                                </TextField>
+                                )}
+                            />
+
+                            <Controller
+                                name="servico"
+                                    control={controlAgendamento}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <TextField
+                                        select
+                                        fullWidth
+                                        label="Serviço"
+                                        {...field}
+                                        disabled={!tipoSelecionado}
+                                        sx={{
+                                            backgroundColor: "#E2E0E0",
+                                            borderRadius: 1,
+                                            flexShrink: 0,
+                                        }}
+                                        error={!!errorsAgendamento.servico}
+                                        helperText={errorsAgendamento.servico?.message}
+                                        >
+                                    {(servicosPorTipo[tipoSelecionado] || []).map((servico) => (
+                                        <MenuItem key={servico} value={servico}>
+                                        {servico}
+                                        </MenuItem>
+                                    ))}
+                                    </TextField>
+                                )}
+                            />
+
+                            <Controller
+                                name="cliente_id"
+                                    control={controlAgendamento}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <TextField
+                                        fullWidth
+                                        select
+                                        label="Cliente"
+                                        {...field}
+                                        disabled={!tipoSelecionado}
+                                        sx={{
+                                            backgroundColor: "#E2E0E0",
+                                            borderRadius: 1,
+                                            flexShrink: 0,
+
+                                            "& .MuiSelect-select": {
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis"
+                                            }
+                                        }}
+                                        error={!!errorsAgendamento.cliente_id}
+                                        helperText={errorsAgendamento.cliente_id?.message}
+                                        >
+
+                                        {listaClientes?.length === 0 && (
+                                            <MenuItem value="" disabled>
+                                                Nenhum cliente cadastrado
+                                            </MenuItem>
+                                        )}
+
+                                        {(listaClientes || []).map((cliente) => (
+                                            <MenuItem key={cliente.id} value={cliente.id} title={cliente.nome}>
+                                                {cliente.nome}
+                                            </MenuItem>
+                                        ))}
+                                        </TextField>
+                                )}
+                            />
+
+                            <Box display="flex" gap={2} flexWrap="nowrap">
+                                <TextField
+                                    type='date'
+                                    disabled={!tipoSelecionado}
+                                    {...registerAgendamento('data')}
+                                    sx={{
+                                         backgroundColor: "#E2E0E0",
+                                         borderRadius: 1
+                                    }}
+                                    error={!!errorsAgendamento.data}
+                                    helperText={errorsAgendamento.data?.message}
+                                    fullWidth>
+                                </TextField>
+                                                            
+                                <TextField
+                                    type='time'
+                                    {...registerAgendamento('hora')}
+                                    disabled={!tipoSelecionado}
+                                    fullWidth
+                                    sx={{
+                                         backgroundColor: "#E2E0E0",
+                                         borderRadius: 1
+                                    }}
+                                    error={!!errorsAgendamento.hora}
+                                    helperText={errorsAgendamento.hora?.message}>
+                                </TextField>
+                            </Box>
+
                         <Box sx={{ mt: 2 }}>
                             <Button type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}}>
                                 Gravar

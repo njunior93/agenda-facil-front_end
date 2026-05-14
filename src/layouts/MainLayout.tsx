@@ -4,10 +4,10 @@ import SideBar from "../shared/components/SideBar";
 
 const MainLayout = () => {
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
       <SideBar />
 
-      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column", position: "relative" }}>
         <NavBar />
 
         <main className="min-h-screen w-full flex justify-center" style={{ padding: 20, flex:1, overflow: "auto" }}>
