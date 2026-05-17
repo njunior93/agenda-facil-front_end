@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Box, MenuItem, Modal, TextField} from '@mui/material';
+import {Box, CircularProgress, MenuItem, Modal, TextField} from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { AppContext } from '../context/context';
@@ -28,6 +28,7 @@ const ModalComponent = () => {
     const {agendamentoLocalizado, setAgendamentoLocalizado} = useContext(AppContext);
     const {fetchListaAgendamentos} = useContext(AppContext);
     const {fetchListaClientes, listaClientes} = useContext(AppContext);
+    const [loading, setLoading] = React.useState(false);
 
     useEffect(() =>{
             if (!alerta) return;
@@ -126,6 +127,8 @@ const ModalComponent = () => {
             navigate("/");
         }
 
+        setLoading(true);
+
         try{
              await axios.post("http://localhost:3000/cliente/criar-cliente",{
                 nome: data.nome,
@@ -140,10 +143,12 @@ const ModalComponent = () => {
             await fetchListaClientes();
             
             resetCliente();
+            setLoading(false)
             setAbrirModal(false);  
             setTituloModal('');      
             setAlerta(alertaMensagem("Cliente cadastrado com sucesso!", "success", <ReportProblemIcon/>));            
         }catch(error:any){
+            setLoading(false);
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
         }
@@ -155,6 +160,8 @@ const ModalComponent = () => {
         if(!token) {
             navigate("/");
         }
+
+        setLoading(true);
 
         try{
             await axios.patch(`http://localhost:3000/cliente/editar-cliente/${clienteLocalizado?.id}`,{
@@ -170,11 +177,13 @@ const ModalComponent = () => {
             await fetchListaClientes();
             
             resetCliente();
+            setLoading(false)
             setAbrirModal(false);
             setTituloModal('')
             setClienteLocalizado(null);
             setAlerta(alertaMensagem("Cliente atualizado com sucesso!", "success", <ReportProblemIcon/>));
         }catch(error: any){
+            setLoading(false);
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
         }
@@ -188,6 +197,8 @@ const ModalComponent = () => {
             return;
         }
 
+        setLoading(true);
+
         try{
 
             await axios.delete(`http://localhost:3000/cliente/excluir-cliente/${clienteId}`,
@@ -198,11 +209,13 @@ const ModalComponent = () => {
             await fetchListaClientes();
 
             resetCliente();
+            setLoading(false)
             setAbrirModal(false);
             setTituloModal('')
             setClienteLocalizado(null);           
             setAlerta(alertaMensagem("Cliente excluido com sucesso!", "success", <CheckCircleIcon/>));
         }catch(error: any){
+            setLoading(false);
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
         }
@@ -215,6 +228,8 @@ const ModalComponent = () => {
                 navigate("/");
                 return;
             }
+
+            setLoading(true);
     
             try{
                 await axios.post("http://localhost:3000/agendamento/criar-agendamento",{
@@ -232,10 +247,12 @@ const ModalComponent = () => {
     
                 setAlerta(alertaMensagem("Agendamento criado com sucesso!", "success", <ReportProblemIcon />));
                 resetAgendamento();
+                setLoading(false)
                 setAbrirModal(false);  
                 setTituloModal('');
                 resetAgendamento();
             }catch(error:any){
+                setLoading(false);
                 const mensagemErro = getErrorMessage(error);
                 setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon />));
             }
@@ -248,6 +265,8 @@ const ModalComponent = () => {
             navigate("/");
         }
 
+        setLoading(true)
+
         try{
             await axios.patch(`http://localhost:3000/agendamento/editar-agendamento/${agendamentoLocalizado?.id}`,{
                 status: data.status
@@ -259,11 +278,13 @@ const ModalComponent = () => {
             await fetchListaAgendamentos();
 
             resetAgendamento();
+            setLoading(false)
             setAbrirModal(false);
             setTituloModal('')
             setAgendamentoLocalizado(null);          
             setAlerta(alertaMensagem("Agendamento atualizado com sucesso!", "success", <CheckCircleIcon/>));
         }catch(error: any){
+            setLoading(false);
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
         }
@@ -277,6 +298,8 @@ const ModalComponent = () => {
             return;
          }
 
+         setLoading(true);
+
         try{
 
             await axios.delete(`http://localhost:3000/agendamento/excluir-agendamento/${agendamentoId}`,
@@ -288,11 +311,13 @@ const ModalComponent = () => {
             await fetchListaClientes();
 
             resetAgendamento();
+            setLoading(false)
             setAbrirModal(false);
             setTituloModal('')
             setAgendamentoLocalizado(null);           
             setAlerta(alertaMensagem("Agendamento excluido com sucesso!", "success", <CheckCircleIcon/>));
         }catch(error: any){
+            setLoading(false);
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
         }
@@ -347,14 +372,26 @@ const ModalComponent = () => {
                             />
                         </Box>
                         <Box sx={{ mt: 2 }}>
-                            <Button type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}}>
-                                Gravar
+                            <Button disabled={loading} type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)"},'&.Mui-disabled': { backgroundColor: "#c5f5ac", color: "#ffffff90" }}}>
+                                {loading ? 
+                                (<CircularProgress size={28} color="inherit" /> 
+                                ) : (
+                                    'Gravar'
+                                )}
                             </Button>
-                            <Button  onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
-                                Sair
+                            <Button  disabled={loading} onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff"}, '&.Mui-disabled': { backgroundColor: "#f3d399", color: "#ffffff90" }}}>
+                                {loading ? 
+                                (<CircularProgress size={28} color="inherit" /> 
+                                ) : (
+                                    'Sair'
+                                )}
                             </Button>
-                            <Button  onClick={() => { if (clienteLocalizado) fetchExcluirCliente(clienteLocalizado.id) }} sx={{backgroundColor: "rgb(241, 40, 26)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(255, 0, 0)",},}}>
-                                Excluir cliente
+                            <Button disabled={loading} onClick={() => { if (clienteLocalizado) fetchExcluirCliente(clienteLocalizado.id) }} sx={{backgroundColor: "rgb(241, 40, 26)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(255, 0, 0)"}, '&.Mui-disabled': { backgroundColor: "#f1aaaa", color: "#ffffff90" }}}>
+                                {loading ? 
+                                (<CircularProgress size={28} color="inherit" /> 
+                                ) : (
+                                    'Excluir'
+                                )}
                             </Button>
                         </Box>
                         </form>
@@ -403,11 +440,19 @@ const ModalComponent = () => {
                             />
                         </Box>
                         <Box sx={{ mt: 2 }}>
-                            <Button type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}}>
-                                Gravar
+                            <Button disabled={loading}  type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)"}, '&.Mui-disabled': { backgroundColor: "#8bee55", color: "#ffffff90" }}}>
+                                 {loading ? 
+                                (<CircularProgress size={28} color="inherit" /> 
+                                ) : (
+                                    'Gravar'
+                                )}
                             </Button>
-                            <Button  onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
-                                Sair
+                            <Button disabled={loading} onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff"}, '&.Mui-disabled': { backgroundColor: "#f3d399", color: "#ffffff90" }}}>
+                                {loading ? 
+                                (<CircularProgress size={28} color="inherit" /> 
+                                ) : (
+                                    'Sair'
+                                )}
                             </Button>
                         </Box>
                         </form>
@@ -539,11 +584,19 @@ const ModalComponent = () => {
                             </Box>
 
                         <Box sx={{ mt: 2 }}>
-                            <Button type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}}>
-                                Gravar
+                            <Button disabled={loading}type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)"}, '&.Mui-disabled': { backgroundColor: "#8bee55", color: "#ffffff90" }}}>
+                               {loading ? 
+                                (<CircularProgress size={28} color="inherit" /> 
+                                ) : (
+                                    'Gravar'
+                                )}
                             </Button>
-                            <Button  onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
-                                Sair
+                            <Button disabled={loading} onClick={() => sairModal()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff"}, '&.Mui-disabled': { backgroundColor: "#f3d399", color: "#ffffff90" }}}>
+                                {loading ? 
+                                (<CircularProgress size={28} color="inherit" /> 
+                                ) : (
+                                    'Sair'
+                                )}
                             </Button>
                         </Box>
                         </form>
@@ -559,22 +612,38 @@ const ModalComponent = () => {
                             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 2 }}>
                                 {agendamentoLocalizado.status === 'a' && (
                                     <>
-                                        <Button onClick={() => {fetchEditarAgendamento({ status: 'f' });}} sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "rgb(32, 112, 8)"}}}>
-                                            Finalizar
+                                        <Button onClick={() => {fetchEditarAgendamento({ status: 'f' });}} sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "rgb(32, 112, 8)"}, '&.Mui-disabled': { backgroundColor: "#c5f5ac", color: "#ffffff90" }}}>
+                                             {loading ? 
+                                                (<CircularProgress size={28} color="inherit" /> 
+                                                ) : (
+                                                    'Finalizar'
+                                                )}
                                         </Button>
 
-                                        <Button  onClick={() => {fetchEditarAgendamento({ status: 'c' });}} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "#fc9208ff"}}}>
-                                            Cancelar
+                                        <Button  onClick={() => {fetchEditarAgendamento({ status: 'c' });}} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "#fc9208ff"}, '&.Mui-disabled': { backgroundColor: "#f5deac", color: "#ffffff90" }}}>
+                                            {loading ? 
+                                                (<CircularProgress size={28} color="inherit" /> 
+                                                ) : (
+                                                    'Cancelar'
+                                            )}
                                         </Button>
                                     </>
                                 )}
                                 {agendamentoLocalizado.status === 'c' && (
-                                    <Button  onClick={() => {fetchExcluirAgendamento(agendamentoLocalizado.id)}} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "#fc9208ff"}}}>
-                                        Excluir
+                                    <Button disabled={loading} onClick={() => {fetchExcluirAgendamento(agendamentoLocalizado.id)}} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px", border: "2px solid #ffffffff", paddingX: 3, "&:hover": {backgroundColor: "#fc9208ff"}, '&.Mui-disabled': { backgroundColor: "#f5deac", color: "#ffffff90" }}}>
+                                        {loading ? 
+                                            (<CircularProgress size={28} color="inherit" /> 
+                                            ) : (
+                                                    'Excluir'
+                                        )}
                                     </Button>
                                 )}
-                                <Button  onClick={() => sairModal()} sx={{backgroundColor: "rgb(87, 84, 82)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(27, 27, 27)",},}}>
-                                    Sair
+                                <Button disabled={loading} onClick={() => sairModal()} sx={{backgroundColor: "rgb(87, 84, 82)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(27, 27, 27)"}, '&.Mui-disabled': { backgroundColor: "#9c9c9c", color: "#ffffff90" }}}>
+                                    {loading ? 
+                                            (<CircularProgress size={28} color="inherit" /> 
+                                            ) : (
+                                                    'Sair'
+                                        )}
                                 </Button>
                             </Box>
                         </Box>

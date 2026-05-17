@@ -18,6 +18,8 @@ interface IContext {
   setClienteLocalizado:(cliente: IClienteOutput | null) => void;
   agendamentoLocalizado: IAgendamentoOutput | null;
   setAgendamentoLocalizado:(agendamento: IAgendamentoOutput | null) => void;
+  senhaalterada: boolean;
+  setSenhaAlterada: (alterada: boolean) => void;
 }
 
 interface AppProvideProps{
@@ -38,7 +40,9 @@ const inicial: IContext = {
   listaAgendamentos: [],
   setListaAgendamentos: () => { },
   agendamentoLocalizado: null,
-  setAgendamentoLocalizado: () => { }
+  setAgendamentoLocalizado: () => { },
+  senhaalterada: false,
+  setSenhaAlterada: () => { }
 
 };
 
@@ -51,6 +55,7 @@ export const AppProvider = ({ children }: AppProvideProps) => {
   const [clienteLocalizado, setClienteLocalizado] = useState<IClienteOutput | null>(null);
   const [listaAgendamentos, setListaAgendamentos] = useState<IAgendamentoOutput[]>([]);
   const [agendamentoLocalizado, setAgendamentoLocalizado] = useState<IAgendamentoOutput | null>(null);
+  const [senhaalterada, setSenhaAlterada] = useState<boolean>(false);
 
   const fetchListaClientes = async () => {
           const token = localStorage.getItem("token");
@@ -83,7 +88,7 @@ export const AppProvider = ({ children }: AppProvideProps) => {
 
 
   return (
-    <AppContext.Provider value={{fetchListaAgendamentos,agendamentoLocalizado, setAgendamentoLocalizado,clienteLocalizado,setClienteLocalizado, abrirModal, setAbrirModal, listaClientes, setListaClientes, fetchListaClientes,tituloModal, setTituloModal,listaAgendamentos, setListaAgendamentos}}>
+    <AppContext.Provider value={{senhaalterada, setSenhaAlterada,fetchListaAgendamentos,agendamentoLocalizado, setAgendamentoLocalizado,clienteLocalizado,setClienteLocalizado, abrirModal, setAbrirModal, listaClientes, setListaClientes, fetchListaClientes,tituloModal, setTituloModal,listaAgendamentos, setListaAgendamentos}}>
       {children}
     </AppContext.Provider>
   );

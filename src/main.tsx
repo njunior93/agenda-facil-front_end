@@ -8,12 +8,17 @@ import PaginaAgenda from './features/agendamentos/pages/PaginaAgenda.tsx'
 import PaginaClientes from './features/clientes/pages/PaginaClientes.tsx'
 import MainLayout from './layouts/MainLayout.tsx'
 import PaginaDashboard from './features/dashboard/pages/PaginaDashboard.tsx'
-
+import PaginaRedefinirSenha from './pages/PaginaRedefinirSenha.tsx'
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+  },
+  
+  {
+    path: "/redefinir-senha",
+    element: <PaginaRedefinirSenha />,
   },
 
   {

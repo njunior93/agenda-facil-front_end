@@ -1,10 +1,10 @@
-import { Box, Button, List, ListItem, ListItemAvatar, ListItemText, Paper, Stack, TextField, Typography } from "@mui/material"
+import { Box, Button, List, CircularProgress ,ListItem, ListItemAvatar, ListItemText, Paper, Stack, TextField, Typography } from "@mui/material"
 import Avatar from '@mui/material/Avatar';
 import Modal from "../../../shared/modals/Modal";
 import * as yup from "yup";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import alertaMensagem from "../../../shared/components/AlertaMensagem";
@@ -23,6 +23,7 @@ const PaginaClientes = () => {
     const navigate = useNavigate();
     const {clienteLocalizado, setClienteLocalizado} = useContext(AppContext);
     const {fetchListaAgendamentos} = useContext(AppContext);
+    const [loading, setLoading] = React.useState(false);
 
     useEffect(() =>{
             if (!alerta) return;
@@ -73,6 +74,7 @@ const PaginaClientes = () => {
     
     const limparFormCliente = () =>{
             reset();
+            setLoading(false);
     }
     
     const fetchGravarCliente = async (data: IClienteInput) => {
@@ -82,6 +84,8 @@ const PaginaClientes = () => {
                 navigate("/");
                 return;
             }
+
+            setLoading(true);
     
             try{
                  await axios.post("http://localhost:3000/cliente/criar-cliente",{
@@ -97,9 +101,11 @@ const PaginaClientes = () => {
                 await fetchListaClientes();
     
                 setAlerta(alertaMensagem("Cliente cadastrado com sucesso!", "success", <ReportProblemIcon/>));
+                setLoading(false);
                 reset();
     
             }catch(error:any){
+                setLoading(false);
                 const mensagemErro = getErrorMessage(error);
                 setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
             }
@@ -205,11 +211,19 @@ const PaginaClientes = () => {
                                                         />
                                                 </Box>
                                                 <Box sx={{ mt: 2,display: 'flex', gap: 2, alignItems: 'flex-start'}}>
-                                                    <Button type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}}>
-                                                        Gravar
+                                                    <Button disabled={loading} type="submit" sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)"}, '&.Mui-disabled': { backgroundColor: "#aaf87f", color: "#ffffff90" }}}>
+                                                         {loading ? 
+                                                        (<CircularProgress size={24} color="inherit" /> 
+                                                        ) : (
+                                                            'Gravar'
+                                                        )}
                                                     </Button>
-                                                    <Button  onClick={() => limparFormCliente()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",},}}>
-                                                        Limpar
+                                                    <Button disabled={loading} onClick={() => limparFormCliente()} sx={{backgroundColor: "#f1941aff", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "#fc9208ff",}, '&.Mui-disabled': { backgroundColor: "#f5deac", color: "#ffffff90" }}}>
+                                                        {loading ? 
+                                                        (<CircularProgress size={24} color="inherit" /> 
+                                                        ) : (
+                                                            'Limpar'
+                                                        )}
                                                     </Button>
                                                 </Box>
                         </form>

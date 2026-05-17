@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
 import { use, useContext, useEffect } from "react";
-import { Box, Typography, IconButton, Paper, TextField, MenuItem, Button } from "@mui/material";
+import { Box, Typography, IconButton, Paper, TextField, MenuItem, Button, CircularProgress } from "@mui/material";
 import CalendarioCustom from '../../../shared/components/CalendarioCustom';
 import SaveIcon from '@mui/icons-material/Save';
 import { Controller, useForm } from 'react-hook-form';
@@ -24,6 +24,7 @@ const PaginaAgenda = () => {
     const [alerta, setAlerta] = React.useState<React.ReactNode | null>(null);
     const {listaClientes, fetchListaClientes} = useContext(AppContext);
     const {listaAgendamentos,setListaAgendamentos} = useContext(AppContext);
+    const [loading, setLoading] = React.useState(false);
 
     useEffect(() =>{
                 if (!alerta) return;
@@ -66,6 +67,8 @@ const PaginaAgenda = () => {
             return;
         }
 
+        setLoading(true);
+
         try{
             await axios.post("http://localhost:3000/agendamento/criar-agendamento",{
                 tipoServico: data.tipoServico,
@@ -79,9 +82,11 @@ const PaginaAgenda = () => {
             });
 
             setAlerta(alertaMensagem("Agendamento criado com sucesso!", "success", <ReportProblemIcon />));
+            setLoading(false);
             await fetchListaAgendamento();
             reset();
         }catch(error:any){
+            setLoading(false);
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon />));
         }
@@ -247,7 +252,13 @@ const PaginaAgenda = () => {
                                     </TextField>
                                 </Box>
                                 
-                                <Button disabled={!formularioPreenchido}  startIcon={<SaveIcon />} type='submit' sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)",},}} variant="contained"></Button>
+                                <Button disabled={!formularioPreenchido || loading} type='submit' sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)"}, '&.Mui-disabled': { backgroundColor: "#3e7a1d", color: "#ffffff90" }}} variant="contained">
+                                 {loading ? 
+                                    (<CircularProgress size={24} color="inherit" /> 
+                                    ) : (
+                                        <SaveIcon />
+                                    )}
+                                </Button>
 
                             </Box>
 
