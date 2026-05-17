@@ -9,6 +9,7 @@ import PaginaClientes from './features/clientes/pages/PaginaClientes.tsx'
 import MainLayout from './layouts/MainLayout.tsx'
 import PaginaDashboard from './features/dashboard/pages/PaginaDashboard.tsx'
 import PaginaRedefinirSenha from './pages/PaginaRedefinirSenha.tsx'
+import PaginaCriarUsuario from './pages/PaginaCriarUsuario.tsx'
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,11 @@ const router = createBrowserRouter([
   {
     path: "/redefinir-senha",
     element: <PaginaRedefinirSenha />,
+  },
+
+  {
+    path: "/criar-usuario",
+    element: <PaginaCriarUsuario />,
   },
 
   {

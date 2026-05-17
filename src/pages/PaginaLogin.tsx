@@ -1,7 +1,7 @@
 import * as yup from "yup";
-import {  useForm } from "react-hook-form";
+import {  set, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField, Button, Typography,FormControlLabel, Checkbox, Link, Box, CircularProgress} from "@mui/material";
+import { TextField, Button,Backdrop, Typography,FormControlLabel, Checkbox, Link, Box, CircularProgress} from "@mui/material";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
@@ -18,6 +18,8 @@ const PaginaLogin = () => {
     const [alerta, setAlerta] = useState<React.ReactNode | null>(null);
     const {senhaalterada, setSenhaAlterada} = React.useContext(AppContext);
     const [loading, setLoading] = useState(false);
+    const [botaoReset, setBotaoReset] = useState(false);
+    const {usuarioCriado, setUsuarioCriado} = React.useContext(AppContext);
 
     useEffect(() =>{
         if (!alerta) return;
@@ -36,6 +38,14 @@ const PaginaLogin = () => {
         setSenhaAlterada(false);
         
     }, [senhaalterada]);
+
+    useEffect(() => {
+        if (!usuarioCriado) return;
+
+        setAlerta(alertaMensagem("Usuário criado com sucesso.", "success", <CheckCircleIcon />));
+        setUsuarioCriado(false);
+        
+    }, [usuarioCriado]);
 
     const schema = yup.object({
         email: yup.string().email("Email inválido").required("Email é obrigatório"),
@@ -82,14 +92,18 @@ const PaginaLogin = () => {
             return;
         }
 
+        setBotaoReset(true);
+
         try {
             const response = await axios.post("http://localhost:3000/auth/resetar-senha", {
                 email: email
             });
 
             setAlerta(alertaMensagem("Verifique seu email para instruções de reset de senha.", "success",<CheckCircleIcon />));
+            setBotaoReset(false);
 
         }catch(error:any){
+            setBotaoReset(false);
             if(error.response){
                 setAlerta(alertaMensagem(error.response.data.message, "error",<ReportProblemIcon />));
             }else{
@@ -97,8 +111,6 @@ const PaginaLogin = () => {
             }
         }
     }
-
-
 
     return (
         <main className="min-h-screen w-full flex items-center justify-center bg-gray-100">
@@ -150,13 +162,18 @@ const PaginaLogin = () => {
                     </div>
 
                     <footer>
-                        Novo aqui? <Link href="#" underline="hover">Crie sua conta </Link>
+                        Novo aqui? <Link href="/criar-usuario" underline="hover">Crie sua conta </Link>
                     </footer>
                 </section> 
             </div>
 
         {alerta && <Box sx={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1301,pointerEvents: 'none' }}>{alerta}</Box>}
 
+          {botaoReset && 
+            <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={botaoReset}>
+              <CircularProgress color="inherit" />
+            </Backdrop>
+          }
 
         </main>
     )

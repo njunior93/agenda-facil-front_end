@@ -5,18 +5,18 @@ import { Typography, TextField, Button, Link, Box, CircularProgress } from '@mui
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import axios from 'axios';
 import logo from '../assets/logo.png';
+import { yupResolver } from "@hookform/resolvers/yup";
 import { getErrorMessage } from '../shared/utils/getError';
 import alertaMensagem from '../shared/components/AlertaMensagem';
 import { AppContext } from '../shared/context/context';
+import * as yup from "yup";
+import { type IUsuarioInput } from './usuario/interfaces/IUsuarioInput';
 
-export default function PaginaRedefinirSenha() {
-    const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
+export default function PaginaCriarUsuario() {
     const [alerta, setAlerta] = React.useState<React.ReactNode | null>(null);
-    const {setSenhaAlterada} = React.useContext(AppContext);
     const [loading, setLoading] = useState(false);
-    
-    const token = searchParams.get('token');
+    const navigate = useNavigate();
+    const {setUsuarioCriado} = React.useContext(AppContext);
 
     useEffect(() =>{
                 if (!alerta) return;
@@ -28,35 +28,31 @@ export default function PaginaRedefinirSenha() {
                 return () => clearTimeout(timer);
         }, [alerta]);
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm({
-        defaultValues: {
-            password: '',
-            confirmPassword: ''
-        }
-    });
+    const schema = yup.object({
+        nome: yup.string().required("O nome é obrigatório"),
+        email: yup.string().email("Email inválido").required("O email é obrigatório"),
+        senha: yup.string().min(8, "A senha deve ter no mínimo 8 caracteres").required("A senha é obrigatória"),
+    })
+    
+    const {register, handleSubmit,reset, formState: {errors}} = useForm<IUsuarioInput>({resolver: yupResolver(schema) as any});
 
-    const novaSenha = watch('password');
-
-    const fetchConfirmarReset = async (data: any) => {
-        if (!token) {
-            return;
-        }
-
-        setLoading(true);
-
+    const fetchCadastroUsuario = async (data: IUsuarioInput) => {
         try {
-            await axios.post("http://localhost:3000/auth/confirmar-reset", {
-                token: token,
-                password: data.password
+            setLoading(true);
+
+            await axios.post("http://localhost:3000/usuario/cadastro-usuario", {
+                nome: data.nome,
+                email: data.email,
+                senha: data.senha
             });
 
-            setSenhaAlterada(true);
             setLoading(false);
+            reset();
+            setUsuarioCriado(true);
             navigate('/');
 
-
         }catch(error:any){
-            setSenhaAlterada(false);
+            setUsuarioCriado(false);
             setLoading(false);
             const mensagemErro = getErrorMessage(error);
             setAlerta(alertaMensagem(mensagemErro, "error", <ReportProblemIcon/>));
@@ -78,38 +74,37 @@ export default function PaginaRedefinirSenha() {
                 <section className="w-1/2 flex flex-col items-center justify-center">
                     <div className="w-full max-w-md p-8">
                         <Typography variant="h5" fontWeight="600" mb={1}>
-                            Criar nova senha
+                            Criar seu cadastro
                         </Typography>
                         <Typography variant="body2" color="textSecondary" mb={3}>
-                            Digite e confirme sua nova senha de acesso.
+                            Preencha os campos abaixo para criar seu cadastro.
                         </Typography>
 
-                        <form onSubmit={handleSubmit(fetchConfirmarReset)}>
+                        <form onSubmit={handleSubmit(fetchCadastroUsuario)}>
                             <TextField 
-                                label="Nova Senha"
-                                type="password"
+                                label="Nome Completo"
                                 fullWidth 
                                 margin="normal" 
-                                {...register("password", { 
-                                    required: "A senha é obrigatória", 
-                                    minLength: { value: 8, message: "A senha deve ter no mínimo 8 caracteres",  
-                                     } 
-                                })}
-                                error={!!errors.password}
-                                helperText={errors.password?.message}
+                                {...register("nome")}
+                                error={!!errors.nome}
+                                helperText={errors.nome?.message}
                             />
-
                             <TextField 
-                                label="Confirmar Nova Senha"
+                                label="Email"
+                                fullWidth 
+                                margin="normal" 
+                                {...register("email")}
+                                error={!!errors.email}
+                                helperText={errors.email?.message}
+                            />
+                            <TextField 
+                                label="Senha"
                                 type="password"
                                 fullWidth 
                                 margin="normal" 
-                                {...register("confirmPassword", { 
-                                    required: "Confirme sua senha",
-                                    validate: value => value === novaSenha || "As senhas não coincidem"
-                                })}
-                                error={!!errors.confirmPassword}
-                                helperText={errors.confirmPassword?.message}
+                                {...register("senha")}
+                                error={!!errors.senha}
+                                helperText={errors.senha?.message}
                             />
 
                             <Button 
@@ -130,14 +125,14 @@ export default function PaginaRedefinirSenha() {
                                 {loading ? 
                                 (<CircularProgress size={24} color="inherit" /> 
                                 ) : (
-                                'Salvar Nova Senha'
+                                'Finalizar Cadastro'
                                 )}
                             </Button>
                         </form>
                     </div>
 
                     <footer>
-                        Lembrou a senha? <Link href={loading ? undefined : '/'} underline="hover">Voltar para o login</Link>
+                         <Link href={loading ? "#" : "/"} underline="hover">Voltar para o login</Link>
                     </footer>
                 </section> 
             </div>
