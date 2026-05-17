@@ -50,13 +50,23 @@ const PaginaLogin = () => {
     const schema = yup.object({
         email: yup.string().email("Email inválido").required("Email é obrigatório"),
         senha: yup.string().min(8, "A senha deve conter no mínimo 8 caracteres").required("Senha é obrigatória"),
+        lembrar: yup.boolean().default(() => !!localStorage.getItem('lembrado_email'))
     });
 
     type LoginFormData  = InferType<typeof schema>;
 
-    const {register, handleSubmit, watch, formState: { errors }} = useForm<LoginFormData>({resolver: yupResolver(schema)})
+    const {register, handleSubmit, watch, formState: { errors }} = useForm<LoginFormData>({
+        resolver: yupResolver(schema),
+        defaultValues: {
+            email: localStorage.getItem('lembrado_email') || '',
+            senha: '',
+            lembrar: !!localStorage.getItem("lembrado_email")
+        }
+    
+    })
 
     const email = watch("email")
+    const lembrar = watch("lembrar")
 
     const fetchEntrar = async (data: LoginFormData) =>{
 
@@ -68,6 +78,12 @@ const PaginaLogin = () => {
                 email: data.email,
                 senha: data.senha
             })
+
+            if(data.lembrar){
+                localStorage.setItem('lembrado_email', data.email);
+            }else{
+                localStorage.removeItem("lembrado_email");
+            }
 
             localStorage.setItem("token", response.data.token)
 
@@ -86,6 +102,10 @@ const PaginaLogin = () => {
     }
 
     const fetchResetarSenha = async () => {
+
+        if(loading){
+            return;
+        }
 
         if(!email) {
             setAlerta(alertaMensagem("Por favor, insira seu email para receber as instruções de reset de senha.", "warning",<ReportProblemIcon />));
@@ -147,7 +167,14 @@ const PaginaLogin = () => {
                             />
 
                             <div className="flex items-center justify-between mt-4 mb-4">
-                                <FormControlLabel control={<Checkbox />} label="Lembrar-me" />
+                                <FormControlLabel
+                                label="Lembrar-me" 
+                                control={
+                                    <Checkbox
+                                        checked={lembrar} 
+                                        {...register("lembrar")} 
+                                    />} 
+                                 />
                                 <Link onClick={fetchResetarSenha} href="#" underline="hover">Esqueceu sua senha?</Link>
                             </div>
 
@@ -162,7 +189,7 @@ const PaginaLogin = () => {
                     </div>
 
                     <footer>
-                        Novo aqui? <Link href="/criar-usuario" underline="hover">Crie sua conta </Link>
+                        Novo aqui? <Link href={loading ? undefined : "/criar-usuario"} underline="hover">Crie sua conta </Link>
                     </footer>
                 </section> 
             </div>

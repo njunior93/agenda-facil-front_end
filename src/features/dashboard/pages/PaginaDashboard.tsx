@@ -79,11 +79,22 @@ const PaginaDashboard = () => {
                         <Typography variant="h6" sx={{fontSize: '1rem', backgroundColor: '#ECECEC', width: '100%', padding: '0.5rem', border: '1px solid #ddd' }} gutterBottom  fontWeight="400">Agendamentos recentes</Typography>
 
                         <List sx={{ width: '100%',bgcolor: 'background.paper', flex:1, overflow: 'auto' }}>
-                            {listaAgendamentos.slice(0, 5).map((agendamento) => (
-                                <ListItem key={agendamento.id} divider>
-                                    <ListItemText primary={`Cliente: ${agendamento.cliente.nome}`} secondary={`Data: ${new Date(agendamento.data).toLocaleString()} - Status: ${agendamento.status === 'a' ? 'Agendado' : agendamento.status === 'f' ? 'Finalizado' : 'Cancelado'}`} />
-                                </ListItem>
-                            ))}
+                            {listaAgendamentos.slice(0, 5).map((agendamento) => {
+
+                                const [ano,mes,dia] = agendamento.data.split('-');
+                                const dataFormatada = `${dia}/${mes}/${ano}`;
+                                const horaFormatada = agendamento.hora.slice(0,5)
+                                const status = agendamento.status === 'a' ? 'Agendado' : agendamento.status === 'f' ? 'Finalizado' : 'Cancelado';
+
+                                return (
+                                    <ListItem key={agendamento.id} divider>
+                                        <ListItemText 
+                                            primary={`Cliente: ${agendamento.cliente.nome}`} 
+                                            secondary={`Data: ${dataFormatada} || Hora: ${horaFormatada} - 
+                                            Status: ${agendamento.status === 'a' ? 'Agendado' : agendamento.status === 'f' ? 'Finalizado' : 'Cancelado'}`} />
+                                    </ListItem>
+                                )
+                            })}
                         </List>
                     </Paper>
                     <Paper className="basis-1/3 flex flex-col" elevation={3} sx={{marginBottom: '1rem', width: '100%', height: '220px', backgroundColor: '#F8F9FA' }}>
