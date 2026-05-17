@@ -229,6 +229,9 @@ const PaginaAgenda = () => {
                                         type='date'
                                         disabled={!tipoSelecionado}
                                         {...register('data')}
+                                        inputProps={{
+                                            min: new Date().toISOString().split('T')[0]
+                                        }}
                                         sx={{
                                             backgroundColor: "#E3F2FD",
                                             borderRadius: 1
