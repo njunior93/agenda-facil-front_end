@@ -12,7 +12,7 @@ export const tiposServico: TipoServico[] = [
   "Atendimento técnico",
   "Consultoria",
   "Entrega",
-  "Serviços gerais"
+  "Serviços gerais",
 ];
 
 export const servicosPorTipo: Record<TipoServico, string[]> = {
@@ -20,39 +20,35 @@ export const servicosPorTipo: Record<TipoServico, string[]> = {
     "Manutenção preventiva",
     "Manutenção corretiva",
     "Revisão geral",
-    "Limpeza técnica"
+    "Limpeza técnica",
   ],
 
   Instalação: [
     "Instalação de equipamento",
     "Configuração inicial",
     "Montagem",
-    "Setup completo"
+    "Setup completo",
   ],
 
   "Atendimento técnico": [
     "Suporte técnico",
     "Diagnóstico de problema",
     "Visita técnica",
-    "Correção de falha"
+    "Correção de falha",
   ],
 
   Consultoria: [
     "Análise técnica",
     "Planejamento",
     "Avaliação de projeto",
-    "Recomendação técnica"
+    "Recomendação técnica",
   ],
 
-  Entrega: [
-    "Entrega simples",
-    "Entrega com instalação",
-    "Retirada de produto"
-  ],
+  Entrega: ["Entrega simples", "Entrega com instalação", "Retirada de produto"],
 
   "Serviços gerais": [
     "Atendimento externo",
     "Acompanhamento",
-    "Serviço personalizado"
-  ]
+    "Serviço personalizado",
+  ],
 };

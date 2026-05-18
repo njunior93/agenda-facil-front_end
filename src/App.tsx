@@ -1,14 +1,12 @@
-import './App.css'
-import PaginaLogin from './pages/PaginaLogin'
-
+import "./App.css";
+import PaginaLogin from "./pages/PaginaLogin";
 
 function App() {
-
   return (
     <>
-      <PaginaLogin/>
+      <PaginaLogin />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,5 +1,5 @@
-export interface IUsuarioInput{
-    nome: string;
-    email: string;
-    senha: string;
+export interface IUsuarioInput {
+  nome: string;
+  email: string;
+  senha: string;
 }

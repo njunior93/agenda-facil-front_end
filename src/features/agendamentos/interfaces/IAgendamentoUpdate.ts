@@ -1,3 +1,3 @@
-export interface IAgendamentoUpdate{
-    status: 'a' | 'c' | 'f';
+export interface IAgendamentoUpdate {
+  status: "a" | "c" | "f";
 }

@@ -1,7 +1,7 @@
-import { createContext, useState, type ReactNode } from 'react';
-import type { IClienteOutput } from '../../features/clientes/interfaces/IClienteOutput';
-import axios from 'axios';
-import type { IAgendamentoOutput } from '../../features/agendamentos/interfaces/IAgendamentoOutput';
+import { createContext, useState, type ReactNode } from "react";
+import type { IClienteOutput } from "../../features/clientes/interfaces/IClienteOutput";
+import axios from "axios";
+import type { IAgendamentoOutput } from "../../features/agendamentos/interfaces/IAgendamentoOutput";
 
 interface IContext {
   setAbrirModal: (open: false | true) => void;
@@ -15,39 +15,38 @@ interface IContext {
   tituloModal: string;
   setTituloModal: (titulo: string) => void;
   clienteLocalizado: IClienteOutput | null;
-  setClienteLocalizado:(cliente: IClienteOutput | null) => void;
+  setClienteLocalizado: (cliente: IClienteOutput | null) => void;
   agendamentoLocalizado: IAgendamentoOutput | null;
-  setAgendamentoLocalizado:(agendamento: IAgendamentoOutput | null) => void;
+  setAgendamentoLocalizado: (agendamento: IAgendamentoOutput | null) => void;
   senhaalterada: boolean;
   setSenhaAlterada: (alterada: boolean) => void;
   usuarioCriado: boolean;
   setUsuarioCriado: (criado: boolean) => void;
 }
 
-interface AppProvideProps{
-    children: ReactNode
+interface AppProvideProps {
+  children: ReactNode;
 }
 
 const inicial: IContext = {
-  setAbrirModal: () => { },
+  setAbrirModal: () => {},
   abrirModal: false,
   listaClientes: [],
-  setListaClientes: () => { },
-  fetchListaClientes: async () => { },
-  fetchListaAgendamentos: async () => { },
-  tituloModal: '',
-  setTituloModal: () => { },
+  setListaClientes: () => {},
+  fetchListaClientes: async () => {},
+  fetchListaAgendamentos: async () => {},
+  tituloModal: "",
+  setTituloModal: () => {},
   clienteLocalizado: null,
-  setClienteLocalizado: () => { },
+  setClienteLocalizado: () => {},
   listaAgendamentos: [],
-  setListaAgendamentos: () => { },
+  setListaAgendamentos: () => {},
   agendamentoLocalizado: null,
-  setAgendamentoLocalizado: () => { },
+  setAgendamentoLocalizado: () => {},
   senhaalterada: false,
-  setSenhaAlterada: () => { },
+  setSenhaAlterada: () => {},
   usuarioCriado: false,
-  setUsuarioCriado: () => { }
-
+  setUsuarioCriado: () => {},
 };
 
 export const AppContext = createContext<IContext>(inicial);
@@ -55,45 +54,74 @@ export const AppContext = createContext<IContext>(inicial);
 export const AppProvider = ({ children }: AppProvideProps) => {
   const [abrirModal, setAbrirModal] = useState<false | true>(false);
   const [listaClientes, setListaClientes] = useState<IClienteOutput[]>([]);
-  const [tituloModal, setTituloModal] = useState<string>('');
-  const [clienteLocalizado, setClienteLocalizado] = useState<IClienteOutput | null>(null);
-  const [listaAgendamentos, setListaAgendamentos] = useState<IAgendamentoOutput[]>([]);
-  const [agendamentoLocalizado, setAgendamentoLocalizado] = useState<IAgendamentoOutput | null>(null);
+  const [tituloModal, setTituloModal] = useState<string>("");
+  const [clienteLocalizado, setClienteLocalizado] =
+    useState<IClienteOutput | null>(null);
+  const [listaAgendamentos, setListaAgendamentos] = useState<
+    IAgendamentoOutput[]
+  >([]);
+  const [agendamentoLocalizado, setAgendamentoLocalizado] =
+    useState<IAgendamentoOutput | null>(null);
   const [senhaalterada, setSenhaAlterada] = useState<boolean>(false);
   const [usuarioCriado, setUsuarioCriado] = useState<boolean>(false);
 
   const fetchListaClientes = async () => {
-          const token = localStorage.getItem("token");
-  
-          try{
-              const response = await axios.get("http://localhost:3000/cliente/listar-clientes", {
-                  headers: {Authorization: `Bearer ${token}`}
-              });
-  
-              setListaClientes(response.data);
-  
-          }catch(error:any){
-              console.log(error);
-          }
-  }
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/cliente/listar-clientes",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      setListaClientes(response.data);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
 
   const fetchListaAgendamentos = async () => {
-      const token = localStorage.getItem("token");
-  
-      try{
-          const response = await axios.get("http://localhost:3000/agendamento/listar-agendamentos", {
-              headers: {Authorization: `Bearer ${token}`}
-          });
-          
-          setListaAgendamentos(response.data);
-      }catch(error:any){
-          console.log(error);
-      }
-  }
+    const token = localStorage.getItem("token");
 
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/agendamento/listar-agendamentos",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      setListaAgendamentos(response.data);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
 
   return (
-    <AppContext.Provider value={{usuarioCriado, setUsuarioCriado,senhaalterada, setSenhaAlterada,fetchListaAgendamentos,agendamentoLocalizado, setAgendamentoLocalizado,clienteLocalizado,setClienteLocalizado, abrirModal, setAbrirModal, listaClientes, setListaClientes, fetchListaClientes,tituloModal, setTituloModal,listaAgendamentos, setListaAgendamentos}}>
+    <AppContext.Provider
+      value={{
+        usuarioCriado,
+        setUsuarioCriado,
+        senhaalterada,
+        setSenhaAlterada,
+        fetchListaAgendamentos,
+        agendamentoLocalizado,
+        setAgendamentoLocalizado,
+        clienteLocalizado,
+        setClienteLocalizado,
+        abrirModal,
+        setAbrirModal,
+        listaClientes,
+        setListaClientes,
+        fetchListaClientes,
+        tituloModal,
+        setTituloModal,
+        listaAgendamentos,
+        setListaAgendamentos,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
