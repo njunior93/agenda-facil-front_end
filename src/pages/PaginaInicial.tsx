@@ -1,13 +1,10 @@
 import { Typography } from "@mui/material";
-import NavBar from "../shared/components/NavBar";
 import Paper from "@mui/material/Paper";
-import SideBar from "../shared/components/SideBar";
+
 
 const PaginaInicial = () => {
   return (
     <>
-      <NavBar></NavBar>
-      <SideBar></SideBar>
       <main>
         <section>
           <div className="flex flex-col  items-start justify-start">

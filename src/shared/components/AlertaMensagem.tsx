@@ -23,8 +23,7 @@ const alertaMensagem = (
           fontSize: "1.2rem",
           display: "block",
           textAlign: "center",
-        }} /* sx={{ fontSize: { xs: '0.9rem', sm: '1.2rem' } }}*/
-      >
+        }}>
         {mensagem}
       </Box>
     </Alert>

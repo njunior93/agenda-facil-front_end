@@ -145,7 +145,6 @@ const PaginaAgenda = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-2 md:px-4">
-      {/* Título da Página */}
       <section className="mb-4">
         <div className="flex flex-col items-center justify-center text-center">
           <Typography
