@@ -60,19 +60,18 @@ export default function PaginaCriarUsuario() {
     }
 
     return (
-        <main className="min-h-screen w-full flex items-center justify-center bg-gray-100">
-            <div className="w-full max-w-5xl min-h-[500px] bg-white shadow-lg rounded-2xl flex overflow-hidden">
-                
-                <section className="flex w-1/2 bg-[#F5613B] p-2">
-                    <div className="m-auto text-white font-sans">
-                        <figure>
-                            <img src={logo} alt="Logo" className="w-full"/>
+        <main className="min-h-screen w-full flex items-center justify-center bg-gray-100 p-4">
+            <div className="w-full max-w-4xl min-h-[500px] bg-white shadow-lg rounded-2xl flex flex-col md:!flex-row overflow-hidden">
+                <section className="flex w-full md:w-1/2 bg-[#F5613B] p-8 md:p-12 items-center justify-center">
+                    <div className="w-full max-w-[200px] md:max-w-[280px] text-white flex items-center justify-center">
+                        <figure className="w-full flex items-center justify-center">
+                            <img src={logo} alt="Logo" className="w-full h-auto object-contain"/>
                         </figure>
                     </div>
                 </section>
                 
-                <section className="w-1/2 flex flex-col items-center justify-center">
-                    <div className="w-full max-w-md p-8">
+                <section className="w-full md:w-1/2 flex flex-col items-center justify-center p-6 md:p-8 bg-white">
+                    <div className="w-full max-w-md">
                         <Typography variant="h5" fontWeight="600" mb={1}>
                             Criar seu cadastro
                         </Typography>
@@ -89,6 +88,7 @@ export default function PaginaCriarUsuario() {
                                 error={!!errors.nome}
                                 helperText={errors.nome?.message}
                             />
+                            
                             <TextField 
                                 label="Email"
                                 fullWidth 
@@ -97,6 +97,7 @@ export default function PaginaCriarUsuario() {
                                 error={!!errors.email}
                                 helperText={errors.email?.message}
                             />
+                            
                             <TextField 
                                 label="Senha"
                                 type="password"
@@ -115,30 +116,29 @@ export default function PaginaCriarUsuario() {
                                 sx={{ 
                                     backgroundColor: "#F5613B", 
                                     border: "2px solid #F76843", 
-                                    borderRadius: "1rem" ,
+                                    borderRadius: "1rem",
                                     color: "#fff", 
-                                    paddingY: "10px",
+                                    paddingY: "12px",
                                     '&:hover': { backgroundColor: "#f7562d" },
                                     '&.Mui-disabled': { backgroundColor: "#fca38d", color: "#ffffff90" }
                                 }}
                             >
-                                {loading ? 
-                                (<CircularProgress size={24} color="inherit" /> 
+                                {loading ? (
+                                    <CircularProgress size={24} color="inherit" /> 
                                 ) : (
-                                'Finalizar Cadastro'
+                                    'Finalizar Cadastro'
                                 )}
                             </Button>
                         </form>
                     </div>
 
-                    <footer>
-                         <Link href={loading ? "#" : "/"} underline="hover">Voltar para o login</Link>
+                    <footer className="mt-8 text-sm text-gray-600">
+                        <Link href={loading ? "#" : "/"} underline="hover">Voltar para o login</Link>
                     </footer>
                 </section> 
             </div>
 
-            {alerta && <Box sx={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1301,pointerEvents: 'none' }}>{alerta}</Box>}          
-
+            {alerta && <Box sx={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1301, pointerEvents: 'none' }}>{alerta}</Box>}          
         </main>
     );
 }

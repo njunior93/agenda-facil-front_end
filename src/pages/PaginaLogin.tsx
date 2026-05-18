@@ -133,18 +133,18 @@ const PaginaLogin = () => {
     }
 
     return (
-        <main className="min-h-screen w-full flex items-center justify-center bg-gray-100">
-            <div className=" w-full max-w-5xl min-h-[500px] bg-white shadow-lg rounded-2xl flex overflow-hidden">
-                <section className="flex w-1/2 bg-[#F5613B] p-2">
-                    <div className="m-auto text-white font-sans">
-                        <figure>
-                            <img src={logo} alt="Logo" className="w-full"/>
+        <main className="min-h-screen w-full flex items-center justify-center bg-gray-100 p-4">
+            <div className="w-full max-w-5xl min-h-[500px] bg-white shadow-lg rounded-2xl flex flex-col overflow-hidden md:!flex-row">
+                <section className="flex w-full md:!flex-1 bg-[#F5613B] p-8 md:p-12 items-center justify-center">
+                    <div className="w-full max-w-[280px] md:!max-w-xs text-white font-sans flex items-center justify-center">
+                        <figure className="w-full">
+                            <img src={logo} alt="Logo" className="w-full h-auto object-contain"/>
                         </figure>
                     </div>
                 </section>
 
-                <section className="w-1/2 flex flex-col items-center justify-center">
-                    <div className="w-full max-w-md p-8">
+                <section className="w-full md:!flex-1 flex flex-col items-center justify-center p-6 md:!p-8">
+                    <div className="w-full max-w-md">
                         <Typography variant="h5" fontWeight="600" mb={2}>Entrar</Typography>
                         <form  onSubmit={handleSubmit(fetchEntrar)}>
                             <TextField 
@@ -166,7 +166,7 @@ const PaginaLogin = () => {
                                 type="password"
                             />
 
-                            <div className="flex items-center justify-between mt-4 mb-4">
+                            <div className="flex flex-wrap items-center justify-between mt-4 mb-4">
                                 <FormControlLabel
                                 label="Lembrar-me" 
                                 control={
@@ -188,7 +188,7 @@ const PaginaLogin = () => {
                         </form>
                     </div>
 
-                    <footer>
+                    <footer className="mt-8 text-sm text-gray-600">
                         Novo aqui? <Link href={loading ? undefined : "/criar-usuario"} underline="hover">Crie sua conta </Link>
                     </footer>
                 </section> 

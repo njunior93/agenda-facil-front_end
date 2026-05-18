@@ -112,100 +112,90 @@ const PaginaAgenda = () => {
         }
     }
 
-    return(
-        <div className="w-full max-w-6xl mx-auto px-4">
-            <section>
-                <div className="flex flex-col items-center justify-center">
-                    <Typography variant="h4" component="h1" fontWeight="bold" color="#707070">
+    return (
+    <div className="w-full max-w-6xl mx-auto px-2 md:px-4">
+        {/* Título da Página */}
+        <section className="mb-4">
+            <div className="flex flex-col items-center justify-center text-center">
+                <Typography variant="h4" component="h1" fontWeight="bold" color="#707070" className="text-2xl sm:text-3xl md:text-4xl">
                     <span className="underline decoration-pink-500">Gestão</span> de Agendamentos
-                    </Typography>
-                </div>
-            </section>
+                </Typography>
+            </div>
+        </section>
 
-            <section className="flex flex-col items-center gap-3 p-2 flex-1 overflow-hidden">
+        <section className="flex flex-col items-center gap-4 p-1 md:!p-2 w-full">
+            <div className="w-full max-w-6xl flex flex-col gap-4">
+                <Paper elevation={3} 
+                className="w-full flex flex-col items-center gap-4 bg-[#1D2937] p-4 md:!p-6"
+                style={{ backgroundColor: '#1D2937' }} 
+                >
 
-                <div className="w-full max-w-6xl">
-                    <Paper  elevation={3} sx={{ width: '100%' , display: 'flex', flexDirection:'column', alignItems: 'center', gap: 2, backgroundColor: '#1D2937', padding: '1rem' }}>
-                    
-                        <Typography variant="h6"  sx={{fontSize: '1rem', backgroundColor: '#1D2937', width: '100%', padding: '0.5rem', color:'#ECECEC' }} gutterBottom  fontWeight="400">Preencha os dados</Typography>
+                <Typography variant="h6" className="text-base w-full px-2 text-[#ECECEC]" gutterBottom fontWeight="200">
+                    Preencha os dados
+                </Typography>
 
-                        <Typography variant="h3"  sx={{fontSize: '0.8rem', backgroundColor: '#1D2937', width: '100%', padding: '0.5rem', color:'#ECECEC' }} gutterBottom  fontWeight="400">Por favor, forneça as seguintes informações</Typography>
+                <Typography className="text-base w-full px-2 text-[#ECECEC] -mt-2" gutterBottom fontWeight="200">
+                    Por favor, forneça as seguintes informações
+                </Typography>
 
-                        <form onSubmit={handleSubmit(fetchGravarAgendamento)}>
-                            <Box display="flex" flexDirection='row' gap={1} justifyItems='center' flexWrap="nowrap">
-                                <Controller
-                                    name="tipoServico"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <TextField
+                    <form onSubmit={handleSubmit(fetchGravarAgendamento)} className="w-full">
+                        <div className="flex flex-col md:!flex-row gap-4 items-stretch md:!items-center justify-center flex-wrap w-full">               
+                            <Controller
+                                name="tipoServico"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
                                         select
                                         label="Tipo de serviço"
                                         {...field}
-                                        sx={{
-                                            backgroundColor: "#E3F2FD",
-                                            borderRadius: 1,
-                                            width: 180,
-                                            maxWidth: 180,
-                                            flexShrink: 0,
-                                        }}
+                                        className="bg-[#E3F2FD] rounded w-full md:!w-auto md:!flex-1 md:!min-w-[160px]"
                                         error={!!errors.tipoServico}
                                         helperText={errors.tipoServico?.message}
-                                        >
+                                    >
                                         {tiposServico.map((tipo) => (
                                             <MenuItem key={tipo} value={tipo}>
-                                            {tipo}
+                                                {tipo}
                                             </MenuItem>
                                         ))}
-                                        </TextField>
-                                    )}
-                                />
+                                    </TextField>
+                                )}
+                            />
 
-                                <Controller
-                                    name="servico"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({ field }) => (
-                                        <TextField
+                            <Controller
+                                name="servico"
+                                control={control}
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
                                         select
                                         label="Serviço"
                                         {...field}
                                         disabled={!tipoSelecionado}
-                                        sx={{
-                                            backgroundColor: "#E3F2FD",
-                                            borderRadius: 1,
-                                            width: 180,
-                                            maxWidth: 180,
-                                            flexShrink: 0,
-                                        }}
+                                        className="bg-[#E3F2FD] rounded w-full md:!w-auto md:!flex-1 md:!min-w-[160px]"
                                         error={!!errors.servico}
                                         helperText={errors.servico?.message}
-                                        >
+                                    >
                                         {(servicosPorTipo[tipoSelecionado] || []).map((servico) => (
                                             <MenuItem key={servico} value={servico}>
-                                            {servico}
+                                                {servico}
                                             </MenuItem>
                                         ))}
-                                        </TextField>
-                                    )}
-                                />
+                                    </TextField>
+                                )}
+                            />
 
-                                <Controller
-                                    name="cliente_id"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({ field }) => (
-                                        <TextField
+                            <Controller
+                                name="cliente_id"
+                                control={control}
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
                                         select
                                         label="Cliente"
                                         {...field}
                                         disabled={!tipoSelecionado}
+                                        className="bg-[#E3F2FD] rounded w-full md:!w-auto md:!flex-1 md:!min-w-[180px]"
                                         sx={{
-                                            backgroundColor: "#E3F2FD",
-                                            borderRadius: 1,
-                                            width: 180,
-                                            maxWidth: 180,
-                                            flexShrink: 0,
-
                                             "& .MuiSelect-select": {
                                                 whiteSpace: "nowrap",
                                                 overflow: "hidden",
@@ -214,71 +204,74 @@ const PaginaAgenda = () => {
                                         }}
                                         error={!!errors.cliente_id}
                                         helperText={errors.cliente_id?.message}
-                                        >
+                                    >
                                         {(listaClientes || []).map((cliente) => (
                                             <MenuItem key={cliente.id} value={cliente.id} title={cliente.nome}>
                                                 {cliente.nome}
                                             </MenuItem>
                                         ))}
-                                        </TextField>
-                                    )}
+                                    </TextField>
+                                )}
+                            />
+
+                            <div className="flex gap-4 w-full md:!w-auto md:!flex-1 md:!min-w-[280px]">
+                                <TextField
+                                    type='date'
+                                    disabled={!tipoSelecionado}
+                                    {...register('data')}
+                                    inputProps={{
+                                        min: new Date().toISOString().split('T')[0]
+                                    }}
+                                    className="bg-[#E3F2FD] rounded"
+                                    error={!!errors.data}
+                                    helperText={errors.data?.message}
+                                    fullWidth
                                 />
+                            
+                                <TextField
+                                    type='time'
+                                    {...register('hora')}
+                                    disabled={!tipoSelecionado}
+                                    className="bg-[#E3F2FD] rounded"
+                                    error={!!errors.hora}
+                                    helperText={errors.hora?.message}
+                                    fullWidth
+                                />
+                            </div>
+                            
+                            <Button 
+                                disabled={!formularioPreenchido || loading} 
+                                type='submit' 
+                                className="text-white font-bold rounded-[20px] border-2 border-white px-8 py-3 w-full md:!w-auto hover:bg-[#1976D3] disabled:bg-[#E0E0E0] disabled:text-[#FFFFFF]"
+                                variant="contained"
+                                disableElevation
+                            >
+                                {loading ? (
+                                    <CircularProgress size={24} color="inherit" /> 
+                                ) : (
+                                    <SaveIcon />
+                                )}
+                            </Button>
 
-                                <Box display="flex" gap={2} flexWrap="nowrap">
-                                    <TextField
-                                        type='date'
-                                        disabled={!tipoSelecionado}
-                                        {...register('data')}
-                                        inputProps={{
-                                            min: new Date().toISOString().split('T')[0]
-                                        }}
-                                        sx={{
-                                            backgroundColor: "#E3F2FD",
-                                            borderRadius: 1
-                                        }}
-                                        error={!!errors.data}
-                                        helperText={errors.data?.message}
-                                        fullWidth>
-                                    </TextField>
-                                
-                                    <TextField
-                                        type='time'
-                                        {...register('hora')}
-                                        disabled={!tipoSelecionado}
-                                        fullWidth
-                                        sx={{
-                                            backgroundColor: "#E3F2FD", // azul claro
-                                            borderRadius: 1
-                                        }}
-                                        error={!!errors.hora}
-                                        helperText={errors.hora?.message}>
-                                    </TextField>
-                                </Box>
-                                
-                                <Button disabled={!formularioPreenchido || loading} type='submit' sx={{backgroundColor: "rgb(53, 163, 20)", color: "#fff", fontWeight: "bold", borderRadius: "20px",border: "2px solid #ffffffff",paddingX: 3,"&:hover": {backgroundColor: "rgb(32, 112, 8)"}, '&.Mui-disabled': { backgroundColor: "#3e7a1d", color: "#ffffff90" }}} variant="contained">
-                                 {loading ? 
-                                    (<CircularProgress size={24} color="inherit" /> 
-                                    ) : (
-                                        <SaveIcon />
-                                    )}
-                                </Button>
+                        </div>
+                    </form>
+                </Paper>    
 
-                            </Box>
-
-                        </form>
-                    </Paper>    
-
-                    <Paper elevation={3} sx={{ width: '100%' ,  display:"flex", flexDirection: "column", backgroundColor: '#ECECEC', flex:1, overflow: "hidden"}}>
-                        <CalendarioCustom/>
-                    </Paper> 
-                </div>
-               
-            </section>
-                        
-            {alerta && <Box sx={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1301,pointerEvents: 'none' }}>{alerta}</Box>}
-            
-        </div>
-    )
+                <Paper elevation={3} className="w-full flex flex-col bg-[#ECECEC] p-2 overflow-hidden">
+                    <div className="w-full overflow-x-auto scrollbar-thin">
+                        <div className="min-w-[600px] sm:min-w-full">
+                            <CalendarioCustom/>
+                        </div>
+                    </div>
+                </Paper> 
+            </div>
+           
+        </section>
+                    
+        {alerta && <Box sx={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1301, pointerEvents: 'none' }}>{alerta}</Box>}
+        
+    </div>
+);
 }
 
 export default PaginaAgenda

@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
 import App from './App.tsx'
 import { AppProvider } from './shared/context/context.tsx'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
@@ -10,6 +9,7 @@ import MainLayout from './layouts/MainLayout.tsx'
 import PaginaDashboard from './features/dashboard/pages/PaginaDashboard.tsx'
 import PaginaRedefinirSenha from './pages/PaginaRedefinirSenha.tsx'
 import PaginaCriarUsuario from './pages/PaginaCriarUsuario.tsx'
+import './index.css'
 
 const router = createBrowserRouter([
   {

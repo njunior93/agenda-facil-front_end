@@ -2,62 +2,91 @@ import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, Lis
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import EventIcon from '@mui/icons-material/Event';
-import BuildIcon from '@mui/icons-material/Build';
 import { useNavigate } from "react-router-dom";
 
+interface SideBarProps {
+  mobileOpen: boolean;
+  handleDrawerToggle: () => void;
+}
 
-const SideBar = () => {
-    const navigate = useNavigate();
+const SideBar: React.FC<SideBarProps> = ({ mobileOpen, handleDrawerToggle }) => {
+  const navigate = useNavigate();
 
-    const DrawerList = (
-    <Box sx={{ width: 250 }} role="presentation">
+  const drawerWidth = 260;
+
+  const DrawerList = (
+    <Box sx={{ width: drawerWidth }} role="presentation" onClick={handleDrawerToggle}>
       <List>
-         <Typography sx={{ pl: 2, pt: 2, pb: 1, fontWeight: "bold", color: "white" }}>
+        <Typography sx={{ pl: 2, pt: 2, pb: 1, fontWeight: "bold", color: "white" }}>
           MENU PRINCIPAL
         </Typography>
-         <ListItem disablePadding>
+        <ListItem disablePadding>
           <ListItemButton onClick={() => navigate("/dashboard")}>
-            <ListItemIcon>
+            <ListItemIcon sx={{ color: 'white' }}>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItemButton>
         </ListItem>
+        
         <Typography sx={{ pl: 2, pt: 2, pb: 1, fontWeight: "bold", color: "white" }}>
           GESTÃO
         </Typography>
-        {['Clientes', 'Agendamentos'].map((text, index) => (
+        {['Clientes', 'Agendamentos'].map((text) => (
           <ListItem key={text} disablePadding>
             <ListItemButton onClick={() => navigate(`/${text.toLowerCase()}`)}>
-              <ListItemIcon>
-                {text === 'Clientes' ? <PeopleIcon/> : text === 'Agendamentos' ? <EventIcon /> : <BuildIcon />}
+              <ListItemIcon sx={{ color: 'white' }}>
+                {text === 'Clientes' ? <PeopleIcon/> : <EventIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-      <Divider />
+      <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
     </Box>
   );
-    return (
-        <Drawer 
-        variant="permanent" 
-        anchor='left'
+
+  return (
+    <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true,
+        }}
         sx={{
-    width: 240,
-    flexShrink: 0,
-    "& .MuiDrawer-paper": {
-      width: 260,
-      boxSizing: "border-box",
-      backgroundColor: "#F45A39",
-      color: "#fff"
-    }
-  }}
-        >
-            {DrawerList}
-        </Drawer>
-    )
-}
+          display: { xs: 'block', md: 'none' },
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            boxSizing: "border-box",
+            backgroundColor: "#F45A39",
+            color: "#fff"
+          },
+        }}
+      >
+        {DrawerList}
+      </Drawer>
+
+      <Drawer
+        variant="permanent"
+        anchor="left"
+        sx={{
+          display: { xs: 'none', md: 'block' },
+          "& .MuiDrawer-paper": {
+            width: drawerWidth,
+            boxSizing: "border-box",
+            backgroundColor: "#F45A39",
+            color: "#fff"
+          }
+        }}
+        open
+      >
+        {DrawerList}
+      </Drawer>
+    </Box>
+  );
+};
 
 export default SideBar;
