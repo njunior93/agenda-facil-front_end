@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { AppContext } from "../context/context";
@@ -35,6 +35,16 @@ export default function CalendarioCustom() {
   const dias = [];
   let dia = inicioCalendario;
 
+  useEffect(() => {
+      if (!alerta) return;
+  
+    const timer = setTimeout(() => {
+      setAlerta(null);
+    }, 3000);
+  
+      return () => clearTimeout(timer);
+    }, [alerta]);
+
   const fetchLocalizarAgendamento = async (id: string) => {
     const token = localStorage.getItem("token");
 
@@ -45,7 +55,7 @@ export default function CalendarioCustom() {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/agendamento/localizar-agendamento/${id}`,
+        `${import.meta.env.VITE_API_URL}/agendamento/localizar-agendamento/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
