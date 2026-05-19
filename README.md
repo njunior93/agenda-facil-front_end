@@ -90,14 +90,6 @@ Durante o desenvolvimento desse projeto pude praticar e fortalecer conhecimentos
 
 ---
 
-# 🚧 Projeto em Evolução
-
-Este é um projeto pessoal de estudo e portfólio.
-
-A ideia é continuar implementando melhorias, novas funcionalidades e evoluindo a arquitetura da aplicação conforme avanço nos estudos e adquiro mais experiência prática 🚀
-
----
-
 # 🤝 Contribuições
 
 Sinta-se à vontade para:
