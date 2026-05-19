@@ -1,4 +1,4 @@
-# 📅 AgendaFácil
+# 📅 Agenda Fácil
 
 AgendaFácil é uma aplicação web desenvolvida para facilitar o gerenciamento de agendamentos de forma simples, prática e intuitiva.
 
