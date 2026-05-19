@@ -1,7 +1,5 @@
 # 📅 Agenda Fácil
 
-AgendaFácil é uma aplicação web desenvolvida para facilitar o gerenciamento de agendamentos de forma simples, prática e intuitiva.
-
 Este projeto foi criado com foco em aprendizado prático, aplicando conceitos modernos de desenvolvimento frontend e backend, além de consolidar meus conhecimentos como estudante da área de tecnologia 🚀
 
 ---
