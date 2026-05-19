@@ -59,6 +59,9 @@ A ideia é continuar evoluindo o sistema aos poucos, aplicando boas práticas e 
 - Bcrypt
 - Nodemailer
 
+🔗 Repositório do backend:
+👉 https://github.com/njunior93/agenda-facil-backend
+
 ---
 
 # ☁️ Deploy
