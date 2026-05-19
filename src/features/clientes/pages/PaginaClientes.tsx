@@ -15,7 +15,7 @@ import Modal from "../../../shared/modals/Modal";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import alertaMensagem from "../../../shared/components/AlertaMensagem";
@@ -35,6 +35,7 @@ const PaginaClientes = () => {
   const { setClienteLocalizado } = useContext(AppContext);
   const { fetchListaAgendamentos } = useContext(AppContext);
   const [loading, setLoading] = React.useState(false);
+  const [busca, setBusca] = useState('');
 
   useEffect(() => {
     if (!alerta) return;
@@ -328,6 +329,8 @@ const PaginaClientes = () => {
                 <TextField
                   size="small"
                   placeholder="Buscar cliente"
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
                   fullWidth
                 />
               </div>
@@ -339,7 +342,16 @@ const PaginaClientes = () => {
                   </Typography>
                 )}
 
-                {listaClientes?.map((cliente: IClienteOutput) => (
+                {listaClientes.filter((cliente) =>{
+                  if(busca.trim() === '') return;
+
+                  const filtro = busca.toLowerCase();
+
+                  const contemCliente = cliente.nome?.toLowerCase().includes(filtro)
+
+                  return contemCliente;
+
+                })?.map((cliente: IClienteOutput) => (
                   <ListItem
                     key={cliente.id}
                     onClick={() => fetchLocalizarCliente(cliente.id)}
