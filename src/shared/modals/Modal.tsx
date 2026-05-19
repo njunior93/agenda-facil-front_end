@@ -386,7 +386,7 @@ const ModalComponent = () => {
 
     try {
       await axios.delete(
-        `h${import.meta.env.VITE_API_URL}/agendamento/excluir-agendamento/${agendamentoId}`,
+        `${import.meta.env.VITE_API_URL}/agendamento/excluir-agendamento/${agendamentoId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
