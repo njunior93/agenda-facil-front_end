@@ -343,7 +343,7 @@ const PaginaClientes = () => {
                 )}
 
                 {listaClientes.filter((cliente) =>{
-                  if(busca.trim() === '') return;
+                  if(busca.trim() === '') return true;
 
                   const filtro = busca.toLowerCase();
 
