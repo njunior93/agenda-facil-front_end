@@ -106,10 +106,10 @@ Toda contribuição é bem-vinda 💙
 # 📎 Links
 
 🔗 Backend:  
-[[Adicionar link backend aqui]](https://github.com/njunior93/agenda-facil-backend.git)
+[Link para o Back End](https://github.com/njunior93/agenda-facil-backend.git)
 
 🔗 Deploy:  
-[[Adicionar link deploy aqui]](https://agenda-facil-ten.vercel.app/)
+[Link para o Deploy da aplicação]](https://agenda-facil-ten.vercel.app/)
 
 ---
 
