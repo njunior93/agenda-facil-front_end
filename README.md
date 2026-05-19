@@ -1,73 +1,128 @@
-# React + TypeScript + Vite
+# 📅 AgendaFácil
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AgendaFácil é uma aplicação web desenvolvida para facilitar o gerenciamento de agendamentos de forma simples, prática e intuitiva.
 
-Currently, two official plugins are available:
+Este projeto foi criado com foco em aprendizado prático, aplicando conceitos modernos de desenvolvimento frontend e backend, além de consolidar meus conhecimentos como estudante da área de tecnologia 🚀
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+# 🚀 Objetivo do Projeto
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Colocar em prática meus conhecimentos em desenvolvimento web
+- Trabalhar com consumo e criação de APIs REST
+- Desenvolver uma aplicação full stack completa
+- Aplicar autenticação e segurança de usuários
+- Criar uma interface responsiva e intuitiva
+- Evoluir gradualmente o projeto com novas funcionalidades
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# 🛠 Funcionalidades
 
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
+- 👤 Cadastro e autenticação de usuários
+- 🔐 Login com JWT Authentication
+- 📧 Recuperação de senha via e-mail
+- 📅 Gerenciamento de agendamentos
+- ✏️ Cadastro, edição e exclusão de registros
+- 📱 Interface responsiva (desktop e mobile)
+- 🔎 Validações de formulário
+- ⚡ Integração completa entre frontend e backend
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+# ⚠️ Observações
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+O projeto ainda está em evolução. Algumas funcionalidades podem receber melhorias e ajustes conforme continuo estudando e aprimorando a aplicação 💡
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+A ideia é continuar evoluindo o sistema aos poucos, aplicando boas práticas e simulando cada vez mais um ambiente real de desenvolvimento.
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+---
+
+# 🧰 Tecnologias Utilizadas
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Material UI (MUI)
+- Tailwind CSS
+- Axios
+- React Hook Form
+- Yup
+
+## Backend
+
+- Node.js
+- NestJS
+- TypeORM
+- PostgreSQL
+- JWT Authentication
+- Bcrypt
+- Nodemailer
+
+---
+
+# ☁️ Deploy
+
+- Frontend hospedado na Vercel
+- Backend hospedado na Railway
+
+---
+
+# 🎨 Interface
+
+A interface foi desenvolvida buscando ser simples, agradável e fácil de utilizar, priorizando a experiência do usuário e a responsividade para diferentes dispositivos.
+
+---
+
+# 📚 Aprendizados
+
+Durante o desenvolvimento desse projeto pude praticar e fortalecer conhecimentos importantes como:
+
+- Estruturação de componentes reutilizáveis
+- Organização de projeto frontend e backend
+- Integração entre APIs
+- Controle de estados
+- Responsividade
+- Validações
+- Autenticação de usuários
+- Consumo de banco de dados
+- Boas práticas de código
+
+---
+
+# 🚧 Projeto em Evolução
+
+Este é um projeto pessoal de estudo e portfólio.
+
+A ideia é continuar implementando melhorias, novas funcionalidades e evoluindo a arquitetura da aplicação conforme avanço nos estudos e adquiro mais experiência prática 🚀
+
+---
+
+# 🤝 Contribuições
+
+Sinta-se à vontade para:
+
+- Testar a aplicação
+- Reportar bugs
+- Sugerir melhorias
+- Compartilhar feedbacks
+
+Toda contribuição é bem-vinda 💙
+
+---
+
+# 📎 Links
+
+🔗 Backend:  
+[[Adicionar link backend aqui]](https://github.com/njunior93/agenda-facil-backend.git)
+
+🔗 Deploy:  
+[[Adicionar link deploy aqui]](https://agenda-facil-ten.vercel.app/)
+
+---
+
+# 👨‍💻 Autor
+
+Desenvolvido por Natanael Junior (Eu)
