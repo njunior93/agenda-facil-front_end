@@ -101,7 +101,7 @@ const PaginaLogin = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:3000/auth/login", {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
         email: data.email,
         senha: data.senha,
       });
@@ -158,7 +158,7 @@ const PaginaLogin = () => {
 
     try {
        await axios.post(
-        "http://localhost:3000/auth/resetar-senha",
+        `${import.meta.env.VITE_API_URL}/auth/resetar-senha`,
         {
           email: email,
         },

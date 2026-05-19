@@ -58,7 +58,7 @@ export default function PaginaCriarUsuario() {
     try {
       setLoading(true);
 
-      await axios.post("http://localhost:3000/usuario/cadastro-usuario", {
+      await axios.post(`${import.meta.env.VITE_API_URL}/usuario/cadastro-usuario`, {
         nome: data.nome,
         email: data.email,
         senha: data.senha,

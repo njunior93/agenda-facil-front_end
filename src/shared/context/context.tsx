@@ -70,7 +70,7 @@ export const AppProvider = ({ children }: AppProvideProps) => {
 
     try {
       const response = await axios.get(
-        "http://localhost:3000/cliente/listar-clientes",
+        `${import.meta.env.VITE_API_URL}/cliente/listar-clientes`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -87,7 +87,7 @@ export const AppProvider = ({ children }: AppProvideProps) => {
 
     try {
       const response = await axios.get(
-        "http://localhost:3000/agendamento/listar-agendamentos",
+        `${import.meta.env.VITE_API_URL}/agendamento/listar-agendamentos`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },

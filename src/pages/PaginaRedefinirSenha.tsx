@@ -57,7 +57,7 @@ export default function PaginaRedefinirSenha() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:3000/auth/confirmar-reset", {
+      await axios.post(`${import.meta.env.VITE_API_URL}/auth/confirmar-reset`, {
         token: token,
         password: data.password,
       });

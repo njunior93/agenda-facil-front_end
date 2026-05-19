@@ -88,9 +88,7 @@ const PaginaAgenda = () => {
 
     setLoading(true);
 
-    try {
-      await axios.post(
-        "http://localhost:3000/agendamento/criar-agendamento",
+    try {await axios.post(`${import.meta.env.VITE_API_URL}/agendamento/criar-agendamento`,
         {
           tipoServico: data.tipoServico,
           servico: data.servico,
@@ -130,7 +128,7 @@ const PaginaAgenda = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:3000/agendamento/listar-agendamentos",
+        `${import.meta.env.VITE_API_URL}/agendamento/listar-agendamentos`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },

@@ -172,7 +172,7 @@ const ModalComponent = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/cliente/criar-cliente",
+        `${import.meta.env.VITE_API_URL}/cliente/criar-cliente`,
         {
           nome: data.nome,
           email: data.email,
@@ -215,7 +215,7 @@ const ModalComponent = () => {
 
     try {
       await axios.patch(
-        `http://localhost:3000/cliente/editar-cliente/${clienteLocalizado?.id}`,
+        `${import.meta.env.VITE_API_URL}/cliente/editar-cliente/${clienteLocalizado?.id}`,
         {
           nome: data.nome,
           email: data.email,
@@ -260,7 +260,7 @@ const ModalComponent = () => {
 
     try {
       await axios.delete(
-        `http://localhost:3000/cliente/excluir-cliente/${clienteId}`,
+        `${import.meta.env.VITE_API_URL}/cliente/excluir-cliente/${clienteId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -299,7 +299,7 @@ const ModalComponent = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/agendamento/criar-agendamento",
+        `${import.meta.env.VITE_API_URL}/agendamento/criar-agendamento`,
         {
           tipoServico: data.tipoServico,
           servico: data.servico,
@@ -344,7 +344,7 @@ const ModalComponent = () => {
 
     try {
       await axios.patch(
-        `http://localhost:3000/agendamento/editar-agendamento/${agendamentoLocalizado?.id}`,
+        `${import.meta.env.VITE_API_URL}/agendamento/editar-agendamento/${agendamentoLocalizado?.id}`,
         {
           status: data.status,
         },
@@ -386,7 +386,7 @@ const ModalComponent = () => {
 
     try {
       await axios.delete(
-        `http://localhost:3000/agendamento/excluir-agendamento/${agendamentoId}`,
+        `h${import.meta.env.VITE_API_URL}/agendamento/excluir-agendamento/${agendamentoId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },

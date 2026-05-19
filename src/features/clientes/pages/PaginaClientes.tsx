@@ -120,7 +120,7 @@ const PaginaClientes = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/cliente/criar-cliente",
+        `${import.meta.env.VITE_API_URL}/cliente/criar-cliente`,
         {
           nome: data.nome,
           email: data.email,
@@ -160,7 +160,7 @@ const PaginaClientes = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/cliente/localizar-cliente/${id}`,
+        `${import.meta.env.VITE_API_URL}/cliente/localizar-cliente/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
